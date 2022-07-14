@@ -1,0 +1,17 @@
+"method","distribution","seed","N","n1","n2","delta","sd","null","power0.01","power0.05","power0.10"
+"TTest_VarEqual","Logistic",109597,1000,10,10,0,1,1,0.007,0.05,0.098
+"TTest_VarEqual","Logistic",3383304,1000,10,10,0.5,3,0,0.014,0.049,0.1
+"TTest_VarEqual","Logistic",9740424,1000,10,10,1.5,3,0,0.02,0.093,0.16
+"TTest_VarEqual","Logistic",69378,1000,10,10,2.5,3,0,0.053,0.147,0.254
+"TTest_VarEqual","Logistic",146908732,1000,20,20,0,1,1,0.013,0.053,0.106
+"TTest_VarEqual","Logistic",3754358,1000,20,20,0.5,3,0,0.017,0.062,0.126
+"TTest_VarEqual","Logistic",32071616,1000,20,20,1.5,3,0,0.048,0.146,0.235
+"TTest_VarEqual","Logistic",130306,1000,20,20,2.5,3,0,0.129,0.302,0.42
+"TTest_VarEqual","Logistic",79517,1000,100,100,0,1,1,0.008,0.046,0.095
+"TTest_VarEqual","Logistic",1562402,1000,100,100,0.5,3,0,0.026,0.091,0.156
+"TTest_VarEqual","Logistic",1231965,1000,100,100,1.5,3,0,0.254,0.491,0.622
+"TTest_VarEqual","Logistic",19225109,1000,100,100,2.5,3,0,0.747,0.914,0.961
+"TTest_VarEqual","Logistic",290511855,1000,10,100,0,1,1,0.017,0.059,0.118
+"TTest_VarEqual","Logistic",279306,1000,10,100,0.5,3,0,0.018,0.051,0.109
+"TTest_VarEqual","Logistic",97462344,1000,10,100,1.5,3,0,0.046,0.133,0.217
+"TTest_VarEqual","Logistic",1141822,1000,10,100,2.5,3,0,0.111,0.286,0.389
