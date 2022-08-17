@@ -13,8 +13,8 @@ All_Neutralised<-function(neutralise.status,
 # Function to return all scenarios ran in Neutralise
 
 All_Neutralised_Scenarios<-function(data) {
-  dir<-dir(paste("Results/settings/",data,"_settings",sep=""))
-  file<-paste("Results/settings/",data,
+  dir<-dir(paste("Settings/",data,"_settings",sep=""))
+  file<-paste("Settings/",data,
               "_settings.RData",
               sep="")
   load(file)
