@@ -1,9 +1,9 @@
 # NAME
-# Brunner–Munzel test
+# Brunner-Munzel test
 # DESCRIPTION
-# TODO
+# The Brunner--Munzel test for stochastic equality of two samples, which is also known as the Generalized Wilcoxon test.
 # REFERENCES
-# Brunner, Edgar, and Ullrich Munzel. "The nonparametric Behrens‐Fisher problem: asymptotic theory and a small‐sample approximation." Biometrical Journal: Journal of Mathematical Methods in Biosciences 42.1 (2000): 17-25.
+# Brunner, Edgar, and Ullrich Munzel. "The nonparametric Behrens-Fisher problem: asymptotic theory and a small-sample approximation." Biometrical Journal: Journal of Mathematical Methods in Biosciences 42.1 (2000): 17-25.(Rfunction: https://www.rdocumentation.org/packages/lawstat/versions/3.4/topics/brunner.munzel.test)
 # END
 library(lawstat)
 Test<-function(db) {

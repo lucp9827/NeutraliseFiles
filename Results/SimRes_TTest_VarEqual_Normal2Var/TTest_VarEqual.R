@@ -1,7 +1,7 @@
 # NAME
-# Two-sample t-test
+# Two-sample Student's t-Test
 # DESCRIPTION
-# Two sample t-test under equal variance assumption
+# Two sample t-test under equal variance assumption.
 # REFERENCES
 # None
 # END

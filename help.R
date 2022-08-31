@@ -12,155 +12,158 @@ All_Neutralised<-function(neutralise.status,
 
 # Function to return all scenarios ran in Neutralise
 
-All_Neutralised_Scenarios<-function(data) {
-  dir<-dir(paste("Settings/",data,"_settings",sep=""))
-  file<-paste("Settings/",data,
+All_Neutralised_Scenarios<-function(data, type='power') {
+  dir<-dir(paste("settings/",data,"_settings",sep=""))
+  file<-paste("settings/",data,
               "_settings.RData",
               sep="")
   load(file)
+  
+  if (type=='power'){
   settings<-settings[settings$null==0,]
   scenarios<-subset(settings,select=-null)
   id=c(1:nrow(scenarios))
   scenarios<-cbind(id,scenarios)
+  }else{
+    settings<-settings[settings$null!=0,]
+    scenarios<-subset(settings,select=-null)
+    id=c(1:nrow(scenarios))
+    scenarios<-cbind(id,scenarios) 
+  }
   return(scenarios)
 }
 
 
 # Function to plot the power of two methods
 
-Power_QQ<-function(method1,method2,alpha=0.05,
+Power_QQ<-function(method1,method2,results_list,alpha=0.05,
                    par.fix=NULL,
                    data=NULL,
-                   col="black", add.to.plot=NULL,group=FALSE,CI=FALSE) { 
+                   col="black",group=FALSE,CI=FALSE, filter=TRUE) { 
   # data = data generation tool
   
   # Read finished file
-  finished<-read.csv("Results/Finished.txt",sep=",",header=T)
-
+  finished<-read.csv("results/Finished.txt",sep=",",header=T)
+  
   # Save data generation methods ran per specified method
   
   if (is.null(data)){
-  data1<-finished$data[finished$method==method1]
-  data2<-finished$data[finished$method==method2]
-  data.i<-intersect(data1,data2)
+    
+    data1<-finished$data[finished$method==method1]
+    data2<-finished$data[finished$method==method2]
+    data.i<-intersect(data1,data2)
+    
   }else {
+    
     data.i=data
   }
   
   results1<-list()
   results2<-list()
-  
+  total_tmp=data.frame()
   win2<-0
   cnt.scenarios<-0
   cnt<-1
-  pwr1<-data.frame()
-  pwr2<-data.frame()
   text_group=c()
-  data.gen<-c()
   
   for(d in data.i) {
     
-    # specify folder in results file
-    dir1<-dir(paste("Results/SimRes_",method1,"_",d,sep=""))
-    dir2<-dir(paste("Results/SimRes_",method2,"_",d,sep=""))
+    results1_tmp = results_list[[d]][results_list[[d]]$method==method1,]
+    results2_tmp = results_list[[d]][results_list[[d]]$method==method2,]
     
     
-    file1<-paste("Results/SimRes_",method1,"_",d,
-                 "/",dir1[grepl(".RData",dir1)&grepl(method1,dir1)],
-                 sep="")
-    
-    file2<-paste("Results/SimRes_",method2,"_",d,
-                 "/",dir2[grepl(".RData",dir2)&grepl(method2,dir2)],
-                 sep="")
-    
-    load(file1)
     if(!is.null(data)) {
-      results<-results[results$distribution==data,]
+      results1_tmp<-results1_tmp[results1_tmp$distribution==d,]
+      results2_tmp<-results2_tmp[results2_tmp$distribution==d,]
     }
     
     if(!is.null(par.fix))  {
-      settings.fix<-results%>%dplyr::select(names(par.fix))
-      results<-results[apply(settings.fix,1,
-                             function(x) {
-                               all(x==unlist(par.fix))
-                             }),]
-    }
-    results1[[cnt]]<-results
-    
-    x= colnames(results)
-    colnr = grep(as.numeric(alpha),x)
-    pwr1.tmp<-results[(results$null==0),c(colnr,colnr+1,colnr+2)]
-    
-    load(file2)
-    if(!is.null(data)) {
-      results<-results[results$distribution==data,]
+      settings.fix<-results1_tmp%>%dplyr::select(names(par.fix))
+      results1_tmp<-results1_tmp[apply(settings.fix,1,
+                                       function(x) {
+                                         all(x==unlist(par.fix))
+                                       }),]
+      
+      settings.fix<-results2_tmp%>%dplyr::select(names(par.fix))
+      results2_tmp<-results2_tmp[apply(settings.fix,1,
+                                       function(x) {
+                                         all(x==unlist(par.fix))
+                                       }),]
     }
     
-    if(!is.null(par.fix)) {
-      settings.fix<-results%>%dplyr::select(names(par.fix))
-      results<-results[apply(settings.fix,1,
-                             function(x) {
-                               all(x==unlist(par.fix))
-                             }),]
+    results1[[d]]<-results1_tmp
+    results2[[d]]<-results2_tmp
+    
+    if (filter!=TRUE){
+    results1_tmp = filter_significance(results1_tmp,alpha)
+    results2_tmp = filter_significance(results2_tmp,alpha)
     }
-    results2[[cnt]]<-results
-    
-    x= colnames(results)
-    colnr = grep(as.numeric(alpha),x)
-    
-    pwr2.tmp<-results[(results$null==0),c(colnr,colnr+1,colnr+2)]
-    
     cnt<-cnt+1
     
-    win2<-win2+sum(pwr1.tmp[,1]<pwr2.tmp[,1])
-    cnt.scenarios<-cnt.scenarios+nrow(pwr1.tmp)
+    results1_tmp$scenario = paste(results1_tmp$distribution,results1_tmp$id)
+    results2_tmp$scenario = paste(results2_tmp$distribution,results2_tmp$id)
     
-    pwr1<-rbind(pwr1,pwr1.tmp)
-    pwr2<-rbind(pwr2,pwr2.tmp)
-    data.gen <-c(data.gen,rep(d,nrow(pwr1.tmp)))
+    results1_tmp = results1_tmp[,c(1:7,which(colnames(results1_tmp)=='power'):length(colnames(results1_tmp)))]
+    results2_tmp = results2_tmp[,c(1:7,which(colnames(results2_tmp)=='power'):length(colnames(results2_tmp)))]
+    
+    if (!length(results1_tmp$scenario)==length(results2_tmp$scenario)){
+      rownames(results1_tmp$scenario)=NULL
+      rownames(results2_tmp$scenario)=NULL
+    tt1 = merge(results1_tmp,results2_tmp,by=c('scenario','n'))
+    }else{
+      colnames(results1_tmp) = paste0(colnames(results1_tmp),".x")
+      colnames(results2_tmp) = paste0(colnames(results2_tmp),".y")
+      names(results2_tmp)[names(results2_tmp)=='n.y'] <- 'n'
+      results1_tmp= subset(results1_tmp,select=-n.x)
+      names(results2_tmp)[names(results2_tmp)=='scenario.y'] <- 'scenario'
+      results1_tmp= subset(results1_tmp,select=-scenario.x)
+      
+      tt1=cbind(results1_tmp,results2_tmp)
+    }
+    
+    
+    tt2 = remove_missing(tt1)
+    
+    win2<-win2+sum(tt2[,'power.x'] < tt2[,'power.y'])
+    cnt.scenarios<-cnt.scenarios+length(tt2[,'power.x'] < tt2[,'power.y'])
     
     if (group==TRUE){
-      win_tmp = sum(pwr1.tmp[,1]<pwr2.tmp[,1])
-      text_group=c(text_group,paste(d,": ",method2," wins over ",method1, " in ", round(100*win_tmp/nrow(pwr1.tmp),1),
-                "% of the ",nrow(pwr1.tmp), " scenarios\n",sep=""))
-    }
-  }
-  powers<-data.frame(pwr1=pwr1[,1],lower_1=pwr1[,2],upper_1=pwr1[,3],pwr2=pwr2[,1],lower_2=pwr2[,2],upper_2=pwr2[,3],data.gen=data.gen)
-  
-  txt=(paste(method2," wins over ",method1, " in ", round(100*win2/cnt.scenarios,1),
-            "% of the ", cnt.scenarios, " scenarios",sep=""))
-  
-  if (!group){
-    if(is.null(add.to.plot)) {
-      
-      p<-ggplot(powers,aes(x=pwr1,y=pwr2))+
-        geom_point(colour={{col}})+
-        ylim(0,1)+xlim(0,1)+
-        geom_abline()+
-        xlab(paste("power of ",method1,sep=""))+
-        ylab(paste("power of ",method2,sep=""))
-    }
-    else {
-      p<-add.to.plot+
-        geom_point(data=powers,aes(x=pwr1,y=pwr2),
-                   colour={{col}})
+      win_tmp = sum(tt2[,'power.x'] < tt2[,'power.y'])
+      text_group=c(text_group,paste(d,": ",method2," wins over ",method1, " in ", round(100*win_tmp/length(tt2[,'power.x'] < tt2[,'power.y']),1),
+                                    "% of the ",length(tt2[,'power.x'] < tt2[,'power.y']), " scenarios\b",sep=""))
     }
     
+    total_tmp = rbind(total_tmp,tt2)
+  }
+
+  
+  txt=(paste(method2," wins over ",method1, " in ", round(100*win2/cnt.scenarios,1),
+             "% of the ", cnt.scenarios, " scenarios\n",sep=""))
+  
+  if (!group){
+    p<-ggplot(total_tmp,aes(x=power.x,y=power.y))+
+      geom_point(colour={{col}})+
+      ylim(0,1)+xlim(0,1)+
+      geom_abline()+
+      xlab(paste("power of ",method1,sep=""))+
+      ylab(paste("power of ",method2,sep=""))+ theme(axis.text.x = element_text(size = 15),
+                                                     axis.text.y = element_text(size = 15),
+                                                     axis.title = element_text(size = 20),
+                                                     legend.key.size = unit(1, 'cm'),
+                                                     legend.title = element_text(size=15),legend.text = element_text(size=15))    
   }else{
-    if(is.null(add.to.plot)) {
-      p<-ggplot(powers,aes(x=pwr1,y=pwr2))+
-        geom_point(aes(colour=factor(data.gen)),size=3)+
-        geom_point(colour="grey90")+
+    p<- ggplot(total_tmp,aes(x=power.x,y=power.y))+
+        geom_point(aes(colour=factor(distribution.x)),size=3)+
         ylim(0,1)+xlim(0,1)+
         geom_abline()+
         xlab(paste("power of ",method1,sep=""))+
-        ylab(paste("power of ",method2,sep=""))
-    }
-    else {
-      p<-add.to.plot+
-        geom_point(data=powers,aes(x=pwr1,y=pwr2),
-                   colour={{col}})
-    }}
+        ylab(paste("power of ",method2 ,sep=""))+
+        labs(colour='Data generation method')+ theme(axis.text.x = element_text(size = 15),
+                                                     axis.text.y = element_text(size = 15),
+                                                     axis.title = element_text(size = 18),
+                                                     legend.key.size = unit(1, 'cm'),
+                                                     legend.title = element_text(size=15),legend.text = element_text(size=15))
+  }
   
   if (group){
     txt=text_group
@@ -169,184 +172,197 @@ Power_QQ<-function(method1,method2,alpha=0.05,
   if (CI){
     p+geom_smooth(method=lm)
   }else{
-  p}
+    p}
   
   (list(win.pct=win2/cnt.scenarios,
-                power=powers,
-                 results1=results1,
-                 results2=results2,
-                 graph=p,
-                text=txt))
+        results1=results1,
+        results2=results2,
+        total=total_tmp,
+        graph=p,
+        text=txt))
   
 }
-
-
 # Function to plot the Type I error rate of one method
 
-Boxplot_TypeI<-function(method,alpha=0.05,tol=0.02,panel="",ylim=c(0,0.07)) {
+Boxplot_TypeI<-function(method,results,alpha=0.05,tol=0.02,panel="",ylim=c(0,0.13),group=TRUE) {
   
-  finished<-read.csv("Results/Finished.txt",sep=",",header=T)
-  
-  data<-finished$data[finished$method==method]
-  
-  cnt.scenarios<-0
-  cnt<-1
-  pwr<-c()
-  distr<-c()
-  n<-c()
-  results1<-list()
-  for(d in data) {
-    dir1<-dir(paste("Results/SimRes_",method,"_",d,sep=""))
-    file1<-paste("Results/SimRes_",method,"_",d,
-                 "/",dir1[grepl(".RData",dir1)&grepl(method,dir1)],
-                 sep="")
-    
-    load(file1)
-    results1[[d]]<-results
-    
-    x= colnames(results)
-    colnr = grep(alpha,x)
-    
-    
-    pwr<-c(pwr,results[results$null==1,colnr])
-    distr<-c(distr,results$distribution[results$null==1])
-    n<-c(n,results$n1[results$null==1]+results$n2[results$null==1])
-    
-    cnt<-cnt+1
-    cnt.scenarios<-cnt.scenarios+length(pwr)
-    
-    db_tmp<-data.frame(pwr=pwr,distribution=distr,n=n)
-    
-    cat(paste(d," with a total sample size of ",db_tmp[db_tmp$distribution==d,'n'],":\n",method," has on average a type I error rate of ",
-              round(100*db_tmp[db_tmp$distribution==d,'pwr']/cnt.scenarios,2),"% at the nominal ",
-              alpha," level.\n",sep=""))
-  }
-  
-  #boxplot(pwr,
-  #        ylab=paste("Type I error rate of ",
-  #                   deparse(substitute(method)),sep=""))
-  
-  
-  cat(paste("On average (over all scenarios) :",method," has a type I error rate not larger than ",
-            alpha," + ",tol," in ",
-            round(100*mean(pwr<alpha+tol),1),
-            "% of the scenarios.\n",sep=""))
-  
-  db<-data.frame(pwr=pwr,distribution=distr,n=n)
-  invisible(list(results=results1)) #power=db,
-  
-  if(panel=="") {
-    p0<-ggplot(db,aes(x="",y=pwr))
-  }
-  if(panel=="distribution") {
-    p0<-ggplot(db,aes(x=distribution,y=pwr))
-  }
-  if(panel=="n") {
-    p0<-ggplot(db,aes(x=factor(n),y=pwr))
-  }
-  graph=p0+
-    geom_boxplot()+
-    geom_jitter(alpha=0.6,width = 0.2, aes(colour=n))+
-    lims(y=ylim)+
-    ylab(paste("Type I error rate of ",
-               {{method}},sep=""))+
-    geom_hline(yintercept=alpha, linetype="dotted", colour="red")+
-    xlab("")
-  return(list(graph=graph))
-}
-
-# Function to plot the Type I error rate of all methods
-Boxplot_TypeI_ALL<-function(methods,alpha=0.05,tol=0.02,panel="",ylim=c(0,0.07)) {
-  
-  finished<-read.csv("Results/Finished.txt",sep=",",header=T)
-  
-  end=data.frame()
-  results1<-list()
-  cnt<-1
-  for (method in methods){
-    data<-finished$data[finished$method==method]
+  data = names(results)
+  lowlim = optimise(function(p){(p+sqrt(p*(1-p)/1000)*qnorm(alpha/2, mean = 0, sd = 1, lower.tail = FALSE)-alpha)^2}, interval=c(0,1))$minimum
+  uplim = optimise(function(p){(p-sqrt(p*(1-p)/1000)*qnorm(alpha/2, mean = 0, sd = 1, lower.tail = FALSE)-alpha)^2}, interval=c(0,1))$minimum
+  if (!group){
     
     cnt.scenarios<-0
+    cnt<-1
     pwr<-c()
     distr<-c()
     n<-c()
+    results1<-data.frame()
+    
     for(d in data) {
-      dir1<-dir(paste("Results/SimRes_",method,"_",d,sep=""))
-      file1<-paste("Results/SimRes_",method,"_",d,
-                   "/",dir1[grepl(".RData",dir1)&grepl(method,dir1)],
-                   sep="")
       
-      load(file1)
-      results1[[method]]<-results
+      if (d=='Normal2Var'){
+        d='Normal'
+      }
       
-      x= colnames(results)
-      colnr = grep(alpha,x)
+      results_method = results[[d]][results[[d]]$method==method,]
       
+      results_method = filter_significance(results_method,alpha)
       
-      pwr<-c(pwr,results[results$null==1,colnr])
-      distr<-c(distr,results$distribution[results$null==1])
-      n<-c(n,results$n1[results$null==1]+results$n2[results$null==1])
+      results_method$n = results_method$n1+results_method$n2
+      
+      n<-c(n,results_method$n)
       
       cnt<-cnt+1
-      cnt.scenarios<-cnt.scenarios+length(pwr)
       
-      db_tmp<-data.frame(pwr=pwr,distribution=distr,n=n)
+      cnt.scenarios<-cnt.scenarios+nrow(results_method)
       
-      cat(paste(d," with a total sample size of ",db_tmp[db_tmp$distribution==d,'n'],":\n",method," has on average a type I error rate of ",
-                round(100*db_tmp[db_tmp$distribution==d,'pwr']/cnt.scenarios,2),"% at the nominal ",
-                alpha," level.\n",sep=""))
+      results1 = rbind(results1,results_method[,c(1:6,(ncol(results_method)-12):ncol(results_method))])
+      
+      # cat(paste(d,results_method[results_method$distribution==d,'id']," with a total sample size of ",results_method[results_method$distribution==d,'n'],":\n",method," has a type I error rate of ",
+      #           round(results_method[results_method$distribution==d,'power'],2)," at the nominal ",
+      #           alpha," level.\n",sep=""))
     }
-    
     
     #boxplot(pwr,
     #        ylab=paste("Type I error rate of ",
     #                   deparse(substitute(method)),sep=""))
     
     
-    cat(paste("On average (over all scenarios) :",method," has a type I error rate not larger than ",
-              alpha," + ",tol," in ",
-              round(100*mean(pwr<alpha+tol),1),
-              "% of the scenarios.\n",sep=""))
-    db<-data.frame(pwr=pwr,distribution=distr,n=n,method=rep(method,length(pwr)))
-    end=rbind(end,db)
+    txt =c(paste("On average (over all scenarios) :",method," has a type I error rate not larger than ",
+                alpha," + ",tol," in ",
+                round(100*mean(results_method[,'power']<alpha+tol,na.rm = TRUE),1),
+                "% of the scenarios.\n",sep=""))
+
+    
+    if(panel=="") {
+      p0<-ggplot(results1,aes(x="",y=power))
+    }
+    if(panel=="distribution") {
+      p0<-ggplot(results1,aes(x=distribution,y=power))
+    }
+    if(panel=="n") {
+      results1$n=factor(results1$n)
+      p0<-ggplot(results1,aes(x=n,y=power))
+    }
+    graph=p0+
+      geom_boxplot()+
+      geom_jitter(alpha=0.6,width = 0.2, aes(colour=n))+
+      lims(y=ylim)+
+      ylab(paste("Type I error rate of ",
+                 {{method}},sep=""))+
+      geom_hline(yintercept=alpha, linetype="dotted", colour="red")+
+      geom_hline(yintercept= lowlim,linetype = 'dotted')+
+      geom_hline(yintercept= uplim, linetype = 'dotted')+
+      xlab("")+ theme(axis.text.x = element_text(size = 18, angle = 90),
+                      axis.text.y = element_text(size = 15),
+                      axis.title = element_text(size = 18),
+                      strip.text.x = element_text(size = 15),
+                      legend.key.size = unit(1.5, 'cm'),
+                      legend.title = element_text(size=15),legend.text = element_text(size=15))+
+      labs(colour='Sample size (total)')
+  }else{
+    
+    
+    txt=c()
+    results1<-data.frame()
+      cnt.scenarios<-0
+      cnt<-1
+  
+      
+      for(d in data) {
+        
+        if (d=='Normal2Var'){
+          d='Normal'
+        }
+        
+        results_data= results[[d]]
+        method=unique(results_data$method)
+        
+        for (m in method){
+        
+        results_method = results_data[results_data$method==m,]
+        
+        results_method = filter_significance(results_method,alpha)
+        
+        results_method$n = results_method$n1+results_method$n2
+        
+        n<-c(n,results_method$n)
+        
+        cnt<-cnt+1
+        
+        cnt.scenarios<-cnt.scenarios+nrow(results_method)
+        
+        results1 = rbind(results1,results_method[,c(1:6,(ncol(results_method)-12):ncol(results_method))])
+        
+        # cat(paste(d,results_method[results_method$distribution==d,'id']," with a total sample size of ",results_method[results_method$distribution==d,'n'],":\n",method," has a type I error rate of ",
+        #           round(results_method[results_method$distribution==d,'power'],2)," at the nominal ",
+        #           alpha," level.\n",sep=""))
+        
+        }
+      
+      #boxplot(pwr,
+      #        ylab=paste("Type I error rate of ",
+      #                   deparse(substitute(method)),sep=""))
+      
+      }
+      
+      for (m in method){
+      txt =c(txt,paste("On average (over all scenarios) :",m," has a type I error rate not larger than ",
+                       alpha," + ",tol," in ",
+                       round(100*mean(results1[results1$method==m,'power']<alpha+tol,na.rm = TRUE),1),
+                       "% of the scenarios.\n",sep=""))
+      }
+    if(panel=="") {
+      p0<-ggplot(results1,aes(x="",y=power))
+    }
+    if(panel=="distribution") {
+      p0<-ggplot(results1,aes(x=distribution,y=power))
+    }
+    if(panel=="n") {
+      results1$n=factor(results1$n)
+      p0<-ggplot(results1,aes(x=n,y=power))
+    }
+    graph=p0+
+      geom_boxplot()+
+      geom_jitter(alpha=0.6,width = 0.2, aes(colour=n))+
+      lims(y=ylim)+
+      ylab(paste("Type I error rate of ",
+                 {{method}},sep=""))+
+      geom_hline(yintercept=alpha, linetype="dotted", colour="red")+
+      geom_hline(yintercept= lowlim,linetype = "dotted")+
+      geom_hline(yintercept= uplim, linetype = "dotted") +
+      xlab("")+
+      facet_wrap(~method,ncol=3)+ theme(axis.text.x = element_text(size = 18, angle = 90),
+                                        axis.text.y = element_text(size = 15),
+                                        axis.title = element_text(size = 18),
+                                        strip.text.x = element_text(size = 15),
+                                        legend.key.size = unit(1.5, 'cm'),
+                                        legend.title = element_text(size=15),legend.text = element_text(size=15))+
+      labs(colour='Sample size (total)')
+    
   }
   
-  invisible(list(results=results1)) #power=db,
-  
-  if(panel=="") {
-    p0<-ggplot(end,aes(x="",y=pwr))
-  }
-  if(panel=="distribution") {
-    p0<-ggplot(end,aes(x=distribution,y=pwr))
-  }
-  if(panel=="n") {
-    p0<-ggplot(end,aes(x=factor(n),y=pwr))
-  }
-  graph=p0+
-    geom_boxplot()+
-    geom_jitter(alpha=0.6,width = 0.2, aes(colour=n))+
-    lims(y=ylim)+
-    ylab(paste("Type I error rate of ",
-               {{method}},sep=""))+
-    geom_hline(yintercept=alpha, linetype="dotted", colour="red")+
-    xlab("")+
-    facet_wrap(~method,ncol=3)
-  return(list(graph=graph))
+  return(list(graph=graph,text=txt,data=results1))
 }
 
 # Function to plot the power in a curve, in function of delta
-Power_curve_ALL<-function(methods,alpha=0.05,
+Power_curve_ALL<-function(methods,results,alpha=0.05,
                           par.fix=NULL,
                           data=NULL,
-                          col="black", add.to.plot=NULL,group=FALSE,CI=FALSE) { 
-  # data = data generation tool
+                          col="black",group=FALSE,CI=FALSE,filter,neutralise.status) { 
+
   
   # Read finished file
   if (is.null(data)){
-    load(file = "Results\\NeutraliseStatus.RData")
-    data.i<-neutralise.status[neutralise.status$type=='data'&neutralise.status$to.run==FALSE,'name']
+data.i<-names(results)
   }else{
     data.i=data
+  }
+  
+  
+  if (group){
+    #load(file = "results\\neutralisestatus.RData")
+    methods=neutralise.status[neutralise.status$type=='method','name']
   }
   
   end=data.frame()
@@ -364,126 +380,68 @@ Power_curve_ALL<-function(methods,alpha=0.05,
     for (m in methods){
       
       # specify folder in results file
-      dir1<-dir(paste("Results/SimRes_",m,"_",d,sep=""))
+      results_dm = results[[d]][results[[d]]$method==m,]
       
-      
-      file1<-paste("Results/SimRes_",m,"_",d,
-                   "/",dir1[grepl(".RData",dir1)&grepl(m,dir1)],
-                   sep="")
-      
-      
-      load(file1)
-      if(!is.null(data)) {
-        results<-results[results$distribution==data,]
-      }
       
       if(!is.null(par.fix)) {
-        settings.fix<-results%>%dplyr::select(names(par.fix))
-        results<-results[apply(settings.fix,1,
-                               function(x) {
-                                 all(x==unlist(par.fix))
-                               }),]
+        settings.fix<-results_dm%>%dplyr::select(names(par.fix))
+        results_dm<-results_dm[apply(settings.fix,1,
+                                     function(x) {
+                                       all(x==unlist(par.fix))
+                                     }),]
       }
-      results$n=results$n1+results$n2
-      results1<-rbind(results1,results)
+      
+      results1<-rbind(results1,results_dm)
       
     }
-    x= colnames(results1)
-    colnr = grep(as.numeric(alpha),x)
+    
+    if (!filter){
+    results1 = filter_significance(results1,alpha)
+    }
     end_tmp=data.frame(method=results1$method,
-                       data.gen=results1$distribution,n=results1$n,delta=results1$delta,power=results1[,colnr],l_CI=results1[,colnr+1],u_CI=results1[,colnr+2],null=results1$null)
+                       data.gen=results1$distribution,n=results1$n,delta=results1$delta,power=results1$power,l_CI=results1$l_CI,u_CI=results1$u_CI)
     
     end=rbind(end,end_tmp)
     
   }
   
-  end_power=end[end$null==0,]
-  end_power$n=as.factor(end_power$n)
+  end$n=as.factor(end$n)
+  end=remove_missing(end)
   if (CI){
-    graph=ggplot(end_power,aes(x=delta,y=power, group=n))+
+    graph=ggplot(end,aes(x=delta,y=power, group=n))+
       geom_line(aes(col=n))+
       geom_point(aes(col=n))+
       geom_errorbar(aes(ymin = l_CI, ymax = u_CI,col=n), width = 0.2)+
       ylim(0:1)+
-      facet_wrap(~method,ncol=3)}
-  else{  graph=ggplot(end_power,aes(x=delta,y=power, group=n))+
+      facet_wrap(~method,ncol=3)+ theme(axis.text.x = element_text(size = 15),
+                                        axis.text.y = element_text(size = 15),
+                                        axis.title = element_text(size = 18),
+                                        strip.text.x = element_text(size = 15),
+                                        legend.key.size = unit(1.5, 'cm'),
+                                        legend.title = element_text(size=15),legend.text = element_text(size=15))+
+      labs(colour='Sample size (total)')}
+  else{  graph=ggplot(end,aes(x=delta,y=power, group=n))+
     geom_line(aes(col=n))+
     geom_point(aes(col=n))+
     ylim(0:1)+
-    facet_wrap(~method,ncol=3)
+    facet_wrap(~method,ncol=3)+ theme(axis.text.x = element_text(size = 15),
+                                      axis.text.y = element_text(size = 15),
+                                      axis.title = element_text(size = 18),
+                                      strip.text.x = element_text(size = 15),
+                                      legend.key.size = unit(1.5, 'cm'),
+                                      legend.title = element_text(size=15),legend.text = element_text(size=15))+
+    labs(colour='Sample size (total)')
   
   }
   
   return(list(graph))
 }
 
-# Comparing methods - distance metric 
-
-sum_res_mat = function(alpha,methods){
-  finished<-read.csv("Results/Finished.txt",sep=",",header=T)
-  # source("help.R")
-
-  
-  end=data.frame()
-  results1<-list()
-  cnt<-1
-  for (method in methods){
-    data<-finished$data[finished$method==method]
-    
-    cnt.scenarios<-0
-    pwr<-c()
-    distr<-c()
-    n<-c()
-    for(d in data) {
-      dir1<-dir(paste("Results/SimRes_",method,"_",d,sep=""))
-      file1<-paste("Results/SimRes_",method,"_",d,
-                   "/",dir1[grepl(".RData",dir1)&grepl(method,dir1)],
-                   sep="")
-      
-      load(file1)
-      results=cbind(results,id=rep(1:nrow(results)))
-      results1[[d]]<-rbind(results1[[d]],results)
-      
-      cnt<-cnt+1
-    }
-  }
-  
-  save(results1,file="Results\\Results.RData")
-  
-  results_power=list()
-  
-  for (i in (1:length(results1))){
-    results_power[[i]]=results1[[i]][results1[[i]]$null!=1,]
-  }
-  
-  
-  power_dataframe=data.frame()
-  
-  for (i in (1:length(results_power))){
-    power_dataframe_tmp=data.frame(method=results_power[[i]]$method,distribution=results_power[[i]]$distribution,id=results_power[[i]]$id,power0.01=results_power[[i]]$power0.01,power0.05=results_power[[i]]$power0.05,power0.10=results_power[[i]]$power0.10)
-    power_dataframe=rbind(power_dataframe,power_dataframe_tmp)
-  }
-  
-  
-  power_dataframe$scenario <- paste(power_dataframe$distribution,power_dataframe$id)
-  
-  power_dataframe=remove_missing(power_dataframe)
-  
-  if (alpha==0.05){
-    mat_pwr=xtabs(power0.05~method+scenario,power_dataframe)}
-  if (alpha==0.01){
-    mat_pwr=xtabs(power0.01~method+scenario,power_dataframe)}
-  if (alpha==0.10){
-    mat_pwr=xtabs(power0.10~method+scenario,power_dataframe)}
-  
-  return(mat_pwr)
-}
-
 ## Function to summarize methods 
 sum_methods = function(){
   
-  method.files<-dir(path=paste("Methods",sep=""))
-  load(paste("Results/NeutraliseStatus.RData",sep=""))
+  method.files<-dir(path=paste("methods",sep=""))
+  load(paste("results/neutralisestatus.RData",sep=""))
   method.exists<-method.files%in%neutralise.status$file.name[
     (neutralise.status$type=="method")&
       (neutralise.status$check==TRUE)]
@@ -494,7 +452,7 @@ sum_methods = function(){
     
     filename_temp=method.files[i]
     
-    filename<-paste("Methods/",filename_temp,sep="")
+    filename<-paste("methods/",filename_temp,sep="")
     
     con=file(filename,"r")
     tmp<-readLines(con,n=-1)
@@ -521,3 +479,388 @@ sum_methods = function(){
   
   return(text)
 }
+
+## Function to generate graph based on moments of distribution
+
+filter_significance = function(results,alpha){
+  
+  x= colnames(results)
+  
+  if (alpha==0.05){
+    
+    x_0.10 = 0.10
+    colnr = grep(as.numeric(x_0.10 ),x)
+    results_tmp=results[,-c(colnr)]
+    
+    x= colnames(results_tmp)
+    x_0.01 = 0.01
+    
+    colnr = grep(as.numeric(x_0.01 ),x)
+    results_tmp=results_tmp[,-c(colnr)]
+  }
+  if (alpha==0.01){
+    
+    x_0.10 = 0.10
+    colnr = grep(as.numeric(x_0.10 ),x)
+    results_tmp=results[,-c(colnr)]
+    
+    x= colnames(results_tmp)
+    x_0.05 = 0.05
+    
+    colnr = grep(as.numeric(x_0.05 ),x)
+    results_tmp=results_tmp[,-c(colnr)]
+  }
+  if (alpha==0.10){
+    
+    x_0.01 = 0.01
+    colnr = grep(as.numeric(x_0.01 ),x)
+    results_tmp=results[,-c(colnr)]
+    
+    x= colnames(results_tmp)
+    x_0.05 = 0.05
+    
+    colnr = grep(as.numeric(x_0.05 ),x)
+    results_tmp=results_tmp[,-c(colnr)]
+    
+  }
+  x= colnames(results_tmp)
+  colnr = grep(as.numeric(alpha),x)
+  colnames(results_tmp)[colnr]=c("power","l_CI","u_CI")
+  
+  return(results_tmp)
+}
+
+moments_curve = function(method,alpha,moment='mom3_1',n=n,results,group=FALSE,filter=FALSE){
+  
+  if (filter==FALSE){
+    results_tmp = filter_significance(results,alpha)
+  }else{
+    results_tmp=results
+  }
+
+    
+    if (group==TRUE){
+      results_tmp_method = results_tmp[(results_tmp$n==n) ,]
+      } else{
+      results_tmp_method = results_tmp[(results_tmp$method==method & results_tmp$n==n) ,]
+      
+    }
+  
+   results_end = results_tmp_method[,moment] 
+  
+  graph = ggplot(results_tmp_method,aes(x=results_end,y=power,group=distribution))+
+    geom_point(aes(col=distribution),size=3)+
+    xlab(moment)+
+    ylim(0:1)+
+  facet_wrap(~method,ncol=3)+ theme(axis.text.x = element_text(size = 15),
+                                    axis.text.y = element_text(size = 15),
+                                    axis.title = element_text(size = 18),
+                                    strip.text.x = element_text(size = 15))
+    
+    
+  
+  return(list(graph=graph,data=results_tmp_method))
+}
+
+filter_type1 = function(results,results_power,alpha){
+  # which scenarios to filter out? 
+  filter_data_list = list()
+  filter_data_df = data.frame()
+  
+  data = names(results_power)
+  
+  for (d in data){
+    
+    if (d!='Normal2Var'){
+    results_id = results[[d]]
+    }else{
+      results_id = results[['Normal']]
+    }
+    
+    results_tmp=filter_significance(results_id,alpha)
+    
+    results_tmp$control= round(results_tmp$l_CI,digits=2)<=alpha&round(results_tmp$u_CI,digits=2)>=alpha
+    results_tmp[is.na(results_tmp$control),'control']<-FALSE
+    
+    filter_data = results_tmp[results_tmp$control==FALSE,]
+    
+    
+    filter_data = subset(filter_data, select=-N)
+    filter_data = subset(filter_data, select=-seed)
+    filter_data = subset(filter_data, select=-delta)
+    filter_data = subset(filter_data, select=-control)
+    filter_data = subset(filter_data, select=-id)
+    filter_data = subset(filter_data, select=-power)
+    filter_data = subset(filter_data, select=-l_CI)
+    filter_data = subset(filter_data, select=-u_CI)
+    filter_data = subset(filter_data, select=-mom1_1)
+    filter_data = subset(filter_data, select=-mom1_2)
+    filter_data = subset(filter_data, select=-mom2_1)
+    filter_data = subset(filter_data, select=-mom2_2)
+    filter_data = subset(filter_data, select=-mom3_1)
+    filter_data = subset(filter_data, select=-mom3_2)
+    filter_data = subset(filter_data, select=-mom4_1)
+    filter_data = subset(filter_data, select=-mom4_2)
+    
+    methods_test = unique(filter_data$method )
+    itt=which(colnames(filter_data)=='n2')+1
+    settng_cols= filter_data[,c(1,itt:(length(filter_data)))]
+    
+    if(d=='Normal2Var'){
+      settng_cols=data.frame(method=settng_cols$method,sd1=settng_cols$sd,sd2=settng_cols$sd,n=settng_cols$n)
+    }
+    
+    Results_power = results_power[[d]]
+    Results_power = filter_significance(Results_power,alpha)
+    Results_power$control=TRUE
+    
+    for (m in methods_test){
+      for (i in colnames(settng_cols)[-c(1,length(settng_cols))]){
+        
+        val =  unique(settng_cols[settng_cols$method==m,c(i,'n')])
+        
+        for (j in (1:nrow(val))){
+          
+            
+          n=val[j,'n']
+          
+          keep =  Results_power[Results_power$method==m&Results_power$n==n,'control']
+          
+          for (l in (1:length(keep))){
+            
+            Results_power[Results_power$method==m&Results_power$n==n,'control'][l]= ifelse((( Results_power[Results_power$method==m&Results_power$n==n,c(i)][l]==val[j,1])& Results_power[Results_power$method==m&Results_power$n==n,'control'][l]==TRUE),FALSE,keep[l])
+            
+          }
+          
+      
+        }
+      }
+    }
+    
+    
+    
+    
+    end_power_data = Results_power[Results_power$control==TRUE,]
+    
+    filter_data_list[[d]] = end_power_data
+    
+    # convert in a data frame
+    if (d=='Normal2Var'){
+      scenarios = All_Neutralised_Scenarios(d,type="power")
+    }else{
+    scenarios = All_Neutralised_Scenarios(d,type="type1")
+    }
+    scenario_filter = scenarios[,-c(1:2)]
+    scenario_filter = data.frame(scenario_filter)
+    names(scenario_filter ) <- names(scenarios)[-c(1:2)]
+    
+    end_power_data_tmp = end_power_data[,!names(end_power_data)%in% names(scenario_filter )]
+    filter_data_df = rbind(filter_data_df,end_power_data_tmp )
+    
+  }
+  
+  return(list(filter_list=filter_data_list, filter_df=filter_data_df))
+}
+
+fil_for_type1 = function(results,alpha){
+  # which scenarios to filter out? 
+  filter_data_list = list()
+  filter_data_df = data.frame()
+  
+  data = names(results)
+  
+  for (d in data){
+    
+    results_id = results[[d]]
+    
+    results_tmp=filter_significance(results_id,alpha)
+    
+    results_tmp$control= round(results_tmp$l_CI,digits=2)<=alpha&round(results_tmp$u_CI,digits=2)>=alpha
+    
+    filter_data = results_tmp[results_tmp$control==FALSE,]
+    
+    
+    filter_data = subset(filter_data, select=-N)
+    filter_data = subset(filter_data, select=-seed)
+    filter_data = subset(filter_data, select=-delta)
+    filter_data = subset(filter_data, select=-control)
+    filter_data = subset(filter_data, select=-id)
+    filter_data = subset(filter_data, select=-power)
+    filter_data = subset(filter_data, select=-l_CI)
+    filter_data = subset(filter_data, select=-u_CI)
+    filter_data = subset(filter_data, select=-mom1_1)
+    filter_data = subset(filter_data, select=-mom1_2)
+    filter_data = subset(filter_data, select=-mom2_1)
+    filter_data = subset(filter_data, select=-mom2_2)
+    filter_data = subset(filter_data, select=-mom3_1)
+    filter_data = subset(filter_data, select=-mom3_2)
+    filter_data = subset(filter_data, select=-mom4_1)
+    filter_data = subset(filter_data, select=-mom4_2)
+    
+    #Results_power = results_power[[d]]
+    
+    
+    end_power_data = anti_join( results_tmp ,filter_data)
+    
+    filter_data_list[[d]] = end_power_data
+    
+    # convert in a data frame
+    scenarios = All_Neutralised_Scenarios(d,type="type1")
+    scenario_filter = scenarios[,-c(1:2)]
+    scenario_filter = data.frame(scenario_filter)
+    names(scenario_filter ) <- names(scenarios)[-c(1:2)]
+    
+    end_power_data_tmp = end_power_data[,!names(end_power_data)%in% names(scenario_filter )]
+    filter_data_df = rbind(filter_data_df,end_power_data_tmp )
+    
+  }
+  
+  return(list(filter_list=filter_data_list, filter_df=filter_data_df))
+}
+
+filtered_data_scenarios = function(results,data,alpha){
+  
+    
+    for (d in data){
+      
+      if (d == 'Normal2Var'){
+        d='Normal'
+      }
+      
+    results_id = results[[d]]
+    
+    results_tmp=filter_significance(results_id,alpha)
+    
+    results_tmp$control= round(results_tmp$l_CI,digits=2)<=alpha&round(results_tmp$u_CI,digits=2)>=alpha
+    
+    filter_data = results_tmp[results_tmp$control==FALSE,]
+    
+    filter_data = subset(filter_data, select=-control)
+    filter_data = subset(filter_data, select=-id)
+    
+    
+  }
+  
+  return(list(filter_data=filter_data))
+  
+  
+}
+
+best_method = function(results_df,name_methods=NULL,name_extra=NULL,alpha=0.01,n=20,filter=TRUE){
+  results=results_df
+  # results=subset(results,select=-mom1_1)
+  # results=subset(results,select=-mom2_1)
+  # results=subset(results,select=-mom3_1)
+  # results=subset(results,select=-mom4_1)
+  
+  if (filter==TRUE){
+    results = filter_significance(results_df,alpha)}
+  
+  if (is.null(name_methods)){
+    name_methods = unique(results$method)
+  }
+  
+  if (!is.null(name_extra)){
+    if (name_extra %in% name_methods){
+      name_methods = name_methods[-which(name_methods==name_extra)]
+    }else{
+      name_methods=name_methods
+    }
+  }
+  
+  results = results[results$method%in%c(name_methods),]
+  data = unique(results$distribution)
+  
+  
+  # Per scenario
+  tmp_end=data.frame()
+  tmp_all = data.frame()
+  for (d in (data)){
+    
+    results_data = results[results$distribution==d,]
+    ind=length(unique(results_data$id))
+    
+    for (i in (1:ind)){
+      #tmp = results_data[results_data$id==i,] 
+      tmp = results_data[results_data$id==i&results_data$n==n,]
+      tmp_scenario_n = tmp[which(tmp$power==max(tmp$power,na.rm=TRUE)),]
+      tmp_scenario_nn = tmp_scenario_n 
+      
+      if (nrow(tmp_scenario_nn)>1){
+        tmp_scenario_n1 = tmp_scenario_nn[1,]
+        tmp_scenario_n1$method[1] = paste(tmp_scenario_nn$method,collapse='-')
+        tmp_scenario_n1$seed[1] = paste(tmp_scenario_nn$seed,collapse='-')
+        tmp_scenario_n1$l_CI[1] = paste(tmp_scenario_nn$l_CI,collapse='-')
+        tmp_scenario_n1$u_CI[1] = paste(tmp_scenario_nn$u_CI,collapse='-')
+        tmp_scenario_nn = tmp_scenario_n1
+      }
+      
+      
+      tmp_end = rbind(tmp_end,tmp_scenario_n)
+      tmp_all = rbind(tmp_all,tmp_scenario_nn)
+    }
+    
+    
+  }
+  tmp_end_tmp = tmp_end
+  # Per data generation op basis van meest voorkomend hoogste power
+  tmp_end=add_count(tmp_end, method,distribution,name="count")
+  test1=data.frame()
+  for (d in data){
+    tmp_end_dis= tmp_end[tmp_end$distribution==d,]
+    if (nrow(tmp_end_dis)==0){
+      tmp_end_dis[1,]=NA
+      tmp_end_dis[,'distribution']=d
+      tmp_end_dis$nscenarios = 0
+      test=tmp_end_dis
+    }else{
+      
+      test=tmp_end_dis[which(tmp_end_dis$count==max(tmp_end_dis$count)),]
+      n_scenarios=length(unique(tmp_end_dis$id))
+      test$nscenarios=n_scenarios
+      
+    }
+    
+    
+    test1=rbind(test1,test)
+  }
+  
+  end = unique(test1[,c('method','distribution','count',"nscenarios")])
+  
+  
+  return(list(end=end,all= tmp_end_tmp, all_one=tmp_all))
+}
+
+
+best_method_plot = function(name_extra,n=20,results_df,filter=TRUE,alpha=0.05,name_methods=NULL){
+  
+  results_1_method = results_df[results_df$method==name_extra &results_df$n==n,]
+  if (filter==TRUE){
+    results_1_method =filter_significance(results_1_method,alpha)
+  }
+  
+  df = best_method(results_df,name_methods,name_extra=name_extra ,alpha,n,filter)$all_one
+  
+  df$scenario = paste(df$distribution,df$id)
+  results_1_method$scenario = paste(results_1_method$distribution,results_1_method$id)
+  
+  tt = merge(results_1_method,df,by='scenario')
+  tt1=remove_missing(tt)
+  
+  txt=paste(name_extra,'wins in',sum(tt1$power.x>tt1$power.y,na.rm=TRUE),'of the ',length(tt1$power.x),'scenarios')
+  
+  p <- ggplot(tt1,aes(x=power.y,y=power.x))+
+    geom_point(aes(colour=factor(distribution.x)),size=3)+
+    ylim(0,1)+xlim(0,1)+
+    geom_abline()+
+    xlab(paste("power of ",'the best method',sep=""))+
+    ylab(paste("power of ",name_extra ,sep=""))+
+    labs(colour='Data generation method')+ theme(axis.text.x = element_text(size = 15),
+                                                 axis.text.y = element_text(size = 15),
+                                                 axis.title = element_text(size = 18),
+                                                 legend.key.size = unit(1, 'cm'),
+                                                 legend.title = element_text(size=15),legend.text = element_text(size=15))
+  
+  return(list(graph=p,data=tt1,text=txt))
+}
+
