@@ -4,9 +4,9 @@ author: "Leyla Kodalci"
 date: "2023-02-07"
 output:
   html_document: default
+  word_document: default
   pdf_document: 
     extra_dependencies: ["float"]
-  word_document: default
 ---
 
 In this report, we will summarize the results of methods that have been neutralized and show the results that give more insights to the method and simulation scenarios. In section 1, the methods included in this framework will be summarized. In section 2, we will show the type I error rate control of all methods per data generation method. In section 3, the power-power plots of a few selected methods will be discussed, as well as the power-power plots that compare a method to the best results over the different scenario's.
@@ -128,6 +128,6 @@ pp4$graph
 
 In terms of Type I error rate control the results has shown that the Welch test and Yuen test, which is a derivative of the Welch test but with trimmed means, do not perform well for skewed and heavy tailed distributions in combination with unequal sample sizes. Moods test and KS, have a conservative type I error rate control, especially for small sample sizes. 
 The methods that have a conservative type I error rate have shown that they are also lacking in terms of power. AD has performed well in most scenarios. The WMW test performed well in scenarios with symmetrical distributions (with equal sample sizes), but less in scenarios with opposite skewed distributions and heavy tailed distributions.  
-In general, the methods perform well for the distributions and scenarios they are developed for. The methods are distinguised from each other in scenarios that have small sample size and/or unequal balanced design, in combination with skewed and heavy tailed distributions. Here, the more robust methods such as AD, CVM perform better. 
+In general, the methods perform well for the distributions and scenarios they are developed for. The methods distinguish from each other in scenarios that have small sample size and/or unequal balanced design, in combination with skewed and heavy tailed distributions. Here, the more robust methods such as AD, CVM perform better. 
 
 
