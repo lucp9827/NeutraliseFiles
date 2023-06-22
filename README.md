@@ -13,7 +13,7 @@ We provide two step-by-step instructions for NeutraliseFiles:
 
 This concise checklist is intended for users to install Neutralise and start working from the beginning, an
 empty NeutraliseFiles folder, and generate their own results. For more details and examples, we refer to
-the Demonstration file of Neutralise (https://github.com/lucp9827/Neutralise). We recommend following
+the README file of Neutralise (https://github.com/lucp9827/Neutralise). We recommend following
 this tutorial to understand how the Neutralise function works and what the possibilities are within this
 initiative.
 
@@ -35,32 +35,18 @@ possibilities)
 
 
 ### B. Step-by-Step instructions for Neutralise - Starting from the Github repository NeutraliseFiles
-This concise checklist is intended for users to analyze the results from the Github repository NeutraliseFiles. For more details and examples, we refer to the Demonstration file of Neutralise (https://github.com/lucp9827/Neutralise).
+This concise checklist is intended for users to analyze the results from the Github repository NeutraliseFiles. For more details and examples, we refer to the README file of Neutralise (https://github.com/lucp9827/Neutralise).
 We recommend following this tutorial to understand how the Neutralise function works and what the pos-
 sibilities are within this initiative.
 1. Download NeutraliseFiles_full.zip from https://github.com/lucp9827/NeutraliseFiles and unzip this
 folder.
 2. Start R.
 3. Set the working directory of your R-session to the folder NeutraliseFiles in the unzipped NeutraliseFiles_full folder.
-4. Install and load the following packages in your R-session: remotes, dplyr, moments, ggplot2, kSam-
-ples, lawstat, BWStest, twosamples, RVAideMemoire, DescTools, WRS2, gk, gld.
-``` r
-#Rcode to Install load required packages:
+4. Install Neutralise. You can use the following R-code: remotes::install_github(’lucp9827/Neutralise’)
 
-reqpkg = c(”remotes”,”dplyr”,”moments”,”ggplot2”,”kSamples”,”lawstat”,”BWStest”, ”RVAideMem-
-oire”,”DescTools”,”WRS2”,”gk”,”gld”,”twosamples”);
+5. Load Neutralise in your R-session. (R-code: library(Neutralise))
 
-for(i in reqpkg)
-{print(i)
-print(packageVersion(i))
-install.packages(i)
-library(i, quietly=TRUE, verbose=FALSE, warn.conflicts=FALSE, character.only=TRUE)}
-```
-5. Install Neutralise. You can use the following R-code: remotes::instal github(’lucp9827/Neutralise’)
-
-6. Load Neutralise in your R-session. (R-code: library(Neutralise))
-
-7. You are ready to start analysing the data, we propose two options below. However, if you want to start
+6. You are ready to start analysing the data, we propose two options below. However, if you want to start
 from the original result files, check the Demonstration file to understand how the results are organized
 in the NeutraliseFiles.
 
