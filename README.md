@@ -4,7 +4,7 @@ NeutraliseFiles is a repository that includes all results of Neutralise, an open
 [Check the wiki for:](https://github.com/lucp9827/NeutraliseFiles/wiki) 
 1. [Details and information on NeutraliseFiles](https://github.com/lucp9827/NeutraliseFiles/wiki)
 2. [Policy and maintenance plan](https://github.com/lucp9827/NeutraliseFiles/wiki/Policy)
-3. [Yearly summary](https://github.com/lucp9827/NeutraliseFiles/wiki/Yearly-Summary-Report)
+3. [Annual summary report](https://github.com/lucp9827/NeutraliseFiles/wiki/Yearly-Summary-Report)
 
    
 We provide two step-by-step instructions for NeutraliseFiles: 
