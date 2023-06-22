@@ -30,7 +30,7 @@ folder.
 
 7. Run the function Initialise_Neutralise(path)
 
-8. You can start using the Neutralise function. (check the demonstration file of Neutralise for details on the function
+8. You can start using the Neutralise function. (check the README file of Neutralise for details on the function
 possibilities)
 
 
