@@ -36,8 +36,7 @@ possibilities)
 
 ### B. Step-by-Step instructions for Neutralise - Starting from the Github repository NeutraliseFiles
 This concise checklist is intended for users to analyze the results from the Github repository NeutraliseFiles. For more details and examples, we refer to the README file of Neutralise (https://github.com/lucp9827/Neutralise).
-We recommend following this tutorial to understand how the Neutralise function works and what the pos-
-sibilities are within this initiative.
+We recommend following this tutorial to understand how the Neutralise function works and what the possibilities are within this initiative.
 1. Download NeutraliseFiles_full.zip from https://github.com/lucp9827/NeutraliseFiles and unzip this
 folder.
 2. Start R.
