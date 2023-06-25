@@ -2,8 +2,9 @@
 title: 'Neutralise: Annual Summary Report'
 author: ""
 date: ""
-output:
-  html_document: default
+output:  
+  html_document: 
+    keep_md: true
   word_document: default
   pdf_document: 
     extra_dependencies: ["float"]
@@ -52,13 +53,11 @@ kable(methods[,c(1,3,5)],booktabs=T,caption = "Table 1: Summary of included meth
 
 ```
 
-
 ## 2. Type I error rate control
 
 Figure 1 shows the emprical type I error rates of all included methods per data generation method. All tests were performed at the 5% level of significance (red dotted line), and the error rates were computed based on 10000 simulation runs. Points above (below) the lower and upper horizontal reference lines (black dotted line) correspond to liberal (conservative) tests. The liberal tests are the test that have a type I error rate (upper confidence interval of the type I error rate) above the the upper reference line. These liberal tests will be filtered out of the results, as comparing these methods to methods that control the type I error would not be fair or sensible.
 
 The percentile modified Wilcoxon-Mann-Whitney test (Gastwirth), has a type I error rate that is too liberal in all scenarios and will be filtered out. The Welch two sample t-test and the Yuen's test do not control the type I error rate control for scenarios of the exponential distribution, and the g-h distribution. These are scenarios with unequal sample sizes. The two sample student-t test is too liberal for scenarios from the Cauchy distribution with unequal sample sizes between the two groups. In contrast, the asymptotic Kolmogorov-Smirnov test and the Mood's median test have a type I error rate control that is very conservative.
-
 
 ```{r,echo=F , warning=FALSE}
 path="C:\\Users\\lucp9827\\Desktop\\Neutralise_end_Dash - report"
@@ -69,12 +68,10 @@ Boxplot_TypeI(path,panel="distribution")$graph
 
 In the figures below (Figure:2-14), the power-power curves are shown between the specified method versus the 'best' performing method in that specific scenario setting (distribution). These plots are given for sample size 20 (left column) and sample size 200 (right column). All 14 methods are included, we excluded Gastwirth as the method had a type I error rate that was far too liberal for most scenarios. In general, the results with sample size 20 are more scattered, while the results of sample size 200 are more centered around the diagonal and more specifically the top right of the diagonal (highest power results), which is expected as the power increases with sample size. The tests that had a very conservative type I error rate control (KS, Mood), also show power-power curves that reflect the lack of power in comparison to the best performing methods. This lack in power is also noticeable for the results for the Cauchy and g-h distributions of the two sample Student-t test and the Welch t-test. Remarkably, for some scenarios of the normal distributions with unequal variances, the Welch t-test has much lower power than the best competitor, the best competitor is the two sample smooth test with fixed order 4 and Legendre polynomials. For the WMW test, the power-power plot shows that the test has at least similar results in comparison to the best method for the logistic distribution with sample size 200 (as expected), but for the small sample sizes slightly better tests exist. The plots of Anderson-Darling(AD) have more of the observations around the diagonal for both sample sizes in comparison to all other methods. Hence, the AD test has often the largest power, and when it does not, its power is not much smaller than the power of the best competitor (i.e. the points are close to the diagonal). The worst performing test is the two sample smooth test with fixed order 6 and Legendre Polynomials. Based on these results we selected AD, KS, the Welsh test, Student-t test, WMW test and two sample smooth test with fixed order 4 and Legendre polynomials. Hence, the plots are better evaluated in some more detail in the next section.
 
-
 ```{r,echo=F,warning=F}
 BM1 = Best_method_plot(path,"AD",n=20,alpha=0.05,name_methods=NULL,N=10000)
 BM2 = Best_method_plot(path,"AD",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
-
 
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 2. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
@@ -86,7 +83,6 @@ BM1 =Best_method_plot(path,"KS",n=20,alpha=0.05,name_methods=NULL,N=10000)
 BM2 = Best_method_plot(path,"KS",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
-
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 3. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
 BM2$graph
@@ -96,7 +92,6 @@ BM2$graph
 BM1 =Best_method_plot(path,"CVM",n=20,alpha=0.05,name_methods=NULL,N=10000)
 BM2 = Best_method_plot(path,"CVM",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
-
 
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 4. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
@@ -108,7 +103,6 @@ BM1 =Best_method_plot(path,"TTest_VarEqual",n=20,alpha=0.05,name_methods=NULL,N=
 BM2 = Best_method_plot(path,"TTest_VarEqual",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
-
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 5. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
 BM2$graph
@@ -119,42 +113,35 @@ BM1 =Best_method_plot(path,"TTest_VarUnequal",n=20,alpha=0.05,name_methods=NULL,
 BM2 = Best_method_plot(path,"TTest_VarUnequal",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
-
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 6. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
 BM2$graph
 ```
-
 
 ```{r,echo=F,warning=F}
 BM1 =Best_method_plot(path,"Yuen",n=20,alpha=0.05,name_methods=NULL,N=10000)
 BM2 = Best_method_plot(path,"Yuen",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
-
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 7. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
 BM2$graph
 ```
-
 
 ```{r,echo=F,warning=F}
 BM1 =Best_method_plot(path,"BM",n=20,alpha=0.05,name_methods=NULL,N=10000)
 BM2 = Best_method_plot(path,"BM",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
-
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 8. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
 BM2$graph
 ```
 
-
 ```{r,echo=F,warning=F}
 BM1 =Best_method_plot(path,"VW",n=20,alpha=0.05,name_methods=NULL,N=10000)
 BM2 = Best_method_plot(path,"VW",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
-
 
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 9. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
@@ -166,62 +153,50 @@ BM1 =Best_method_plot(path,"Mood",n=20,alpha=0.05,name_methods=NULL,N=10000)
 BM2 = Best_method_plot(path,"Mood",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
-
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 10. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
 BM2$graph
 ```
-
-
 
 ```{r,echo=F,warning=F}
 BM1 =Best_method_plot(path,"HFR",n=20,alpha=0.05,name_methods=NULL,N=10000)
 BM2 = Best_method_plot(path,"HFR",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
-
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 11. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
 BM2$graph
 ```
-
 
 ```{r,echo=F,warning=F}
 BM1 =Best_method_plot(path,"WMW_Asymp",n=20,alpha=0.05,name_methods=NULL,N=10000)
 BM2 = Best_method_plot(path,"WMW_Asymp",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
-
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 12. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
 BM2$graph
 ```
-
-
 
 ```{r,echo=F,warning=F}
 BM1 =Best_method_plot(path,"SmoothFixed_4_asymp",n=20,alpha=0.05,name_methods=NULL,N=10000)
 BM2 = Best_method_plot(path,"SmoothFixed_4_asymp",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
-
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 13. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
 BM2$graph
 ```
-
 
 ```{r,echo=F,warning=F}
 BM1 =Best_method_plot(path,"SmoothFixed_6_asymp",n=20,alpha=0.05,name_methods=NULL,N=10000)
 BM2 = Best_method_plot(path,"SmoothFixed_6_asymp",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
-
 ```{r,echo=F,warning=F, fig.show="hold",out.width="50%",fig.cap=paste("Figure 14. Left:(n=20) ",BM1$text[1]," ",BM1$text2[1],"---","Right: (n=200) ",BM2$text[1]," ",BM2$text2[1])}
 BM1$graph
 BM2$graph
 ```
-
 
 ## 4. Power-Power curve
 
