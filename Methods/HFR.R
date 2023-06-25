@@ -2,6 +2,8 @@
 # Asymptotic Hogg-Fisher-Randles adaptive test
 # DESCRIPTION
 # Two sample Hogg-Fisher-Randles adaptive test. P-values based on asymptotic approximation.
+# HYPOTHESIS
+# The null hypothesis is defined as P(X<=Y)= 0.5, which coincides with the equality of distributions under the assumption of symmetry and equal shape. The alternative hypothesis is that P(X<=Y) is not equal to 0.5. 
 # REFERENCES
 # Hogg, R. V., Fisher, D. M., & Randles, R. H. (1975). A two-sample adaptive distribution-free test. Journal of the American Statistical Association, 70(351a), 656-661.
 # END

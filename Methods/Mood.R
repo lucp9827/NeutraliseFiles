@@ -2,6 +2,8 @@
 # Mood's median test
 # DESCRIPTION
 # Performs a Mood's median test to compare medians of independent samples.
+# HYPOTHESIS
+# The null hypothesis is defined for testings equality of medians, while assuming that the distributions are otherwise the same. The alternative states that the medians are different in both groups.
 # REFERENCES
 # MOOD, A. M. (1954). On the asymptotic efficiency of certain non-parametric two-sample tests. Ann. Math.Statist. 25, 514 22. (Rfunction: https://www.rdocumentation.org/packages/RVAideMemoire/versions/0.9-81-2/topics/mood.medtest)
 # END

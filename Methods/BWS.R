@@ -2,6 +2,8 @@
 # Asymptotic Baumgartner-Weiss-Schindler test test
 # DESCRIPTION
 # Two sample Baumgartner-Weiss-Schindler test test. P-values based on asymptotic approximation.
+# HYPOTHESIS
+# The null hypothesis states that two independent samples have the same underlying distribution. The alternative hypothesis states that two independent samples have different underlying distributions. 
 # REFERENCES
 # W. Baumgartner, P. Weiss, H. Schindler, ’A nonparametric test for the general two-sample problem’, Biometrics 54, no. 3 (Sep., 1998): pp. 1129-1135.
 # END
