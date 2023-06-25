@@ -5,8 +5,7 @@
 # HYPOTHESIS
 # The null hypothesis states that two independent samples have the same underlying distribution. The alternative hypothesis states that two independent samples have different underlying distributions based on the first 4 (or 6) moments. 
 # REFERENCES
-# Janic‐Wróblewska A., & Ledwina, T. (2000). Data driven rank test for two‐sample problem. Scandinavian Journal of Statistics, 27(2), 281-297.
-# Thas, O. (2010). Comparing distributions (Vol. 233). New York: Springer.
+# Janic‐Wróblewska A., & Ledwina, T. (2000). Data driven rank test for two‐sample problem. Scandinavian Journal of Statistics, 27(2), 281-297. Thas, O. (2010). Comparing distributions (Vol. 233). New York: Springer.
 # 
 # END
 
