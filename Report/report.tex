@@ -34,6 +34,46 @@
 \makeatother
 \usepackage{xcolor}
 \usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -72,14 +112,13 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Neutralise: Summary Report},
-  pdfauthor={Leyla Kodalci},
+  pdftitle={Neutralise: Annual Summary Report},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
-\title{Neutralise: Summary Report}
-\author{Leyla Kodalci}
-\date{2023-02-07}
+\title{Neutralise: Annual Summary Report}
+\author{}
+\date{\vspace{-2.5em}}
 
 \begin{document}
 \maketitle
@@ -105,13 +144,11 @@ Neutralise (v0.1.0).
 \hypertarget{methods}{%
 \subsection{1. Methods}\label{methods}}
 
-\renewcommand{\arraystretch}{2}
-
 \begin{landscape}\begin{table}[H]
 
 \caption{\label{tab:unnamed-chunk-1}Table 1: Summary of included methods}
 \centering
-\begin{tabular}[t]{>{}l>{}l>{}l>{}l}
+\begin{tabular}[t]{>{}l>{}l>{}l>{}l>{}NA}
 \toprule
 Abbriviation & Name & Description & References\\
 \midrule
@@ -163,13 +200,22 @@ groups. In contrast, the asymptotic Kolmogorov-Smirnov test and the
 Mood's median test have a type I error rate control that is very
 conservative.
 
-\begin{figure}
-\centering
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{path}\OtherTok{=}\StringTok{"C:}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{Users}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{lucp9827}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{Desktop}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{Neutralise\_end\_Dash {-} report"}
+\FunctionTok{Boxplot\_TypeI}\NormalTok{(path,}\AttributeTok{panel=}\StringTok{"distribution"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{graph}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 91 rows containing non-finite values (`stat_boxplot()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 91 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
 \includegraphics{report_files/figure-latex/unnamed-chunk-2-1.pdf}
-\caption{boxplots of the empirical type I error rates. All tests were
-performed at 5\% significance level (red dotted line), and the error
-rates were computed based on 10000 simulation runs.}
-\end{figure}
 
 \hypertarget{power-power-curve-best-method}{%
 \subsection{3. Power-power curve: Best
@@ -208,21 +254,159 @@ two sample smooth test with fixed order 4 and Legendre polynomials.
 Hence, the plots are better evaluated in some more detail in the next
 section.
 
-\begin{figure}[H]
-\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-3-1} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-3-2} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-3-3} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-3-4} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-3-5} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-3-6} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-3-7} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-3-8} \caption{Power-Power curve, comparison to the best performing method in that specific scenario setting. Left column is specified for a total sample size 20 and the right column for a total sample size 200.  }\label{fig:unnamed-chunk-3}
-\end{figure}
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-4-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-4-2}
+\textbackslash caption\{Left:(n=20) AD has the largest power in 52 of
+the 176 scenarios, which is 29.55 \% of the scenarios. The median of the
+power differences for scenarios where AD has smaller power than the best
+test is 0.0316 --- Right: (n=200) AD has the largest power in 1 of the
+225 scenarios, which is 0.44 \% of the scenarios. The median of the
+power differences for scenarios where AD has smaller power than the best
+test is 0.0094\}\label{fig:unnamed-chunk-4} \textbackslash end\{figure\}
 
-\begin{figure}[H]
-\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-4-1} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-4-2} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-4-3} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-4-4} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-4-5} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-4-6} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-4-7} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-4-8} \caption{Power-Power curve, comparison to the best performing method in that specific scenario setting. Left column is specified for a total sample size 20 and the right column for a total sample size 200.  }\label{fig:unnamed-chunk-4}
-\end{figure}
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-6-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-6-2}
+\textbackslash caption\{Left:(n=20) KS has the largest power in 0 of the
+225 scenarios, which is 0 \% of the scenarios. The median of the power
+differences for scenarios where KS has smaller power than the best test
+is 0.1635 --- Right: (n=200) KS has the largest power in 1 of the 225
+scenarios, which is 0.44 \% of the scenarios. The median of the power
+differences for scenarios where KS has smaller power than the best test
+is 0.0357\}\label{fig:unnamed-chunk-6} \textbackslash end\{figure\}
 
-\begin{figure}[H]
-\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-5-1} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-5-2} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-5-3} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-5-4} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-5-5} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-5-6} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-5-7} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-5-8} \caption{Power-Power curve, comparison to the best performing method in that specific scenario setting. Left column is specified for a total sample size 20 and the right column for a total sample size 200.  }\label{fig:unnamed-chunk-5}
-\end{figure}
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-8-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-8-2}
+\textbackslash caption\{Left:(n=20) CVM has the largest power in 32 of
+the 207 scenarios, which is 15.46 \% of the scenarios. The median of the
+power differences for scenarios where CVM has smaller power than the
+best test is 0.0291 --- Right: (n=200) CVM has the largest power in 9 of
+the 225 scenarios, which is 4 \% of the scenarios. The median of the
+power differences for scenarios where CVM has smaller power than the
+best test is 0.0078\}\label{fig:unnamed-chunk-8}
+\textbackslash end\{figure\}
 
-\begin{figure}[H]
-\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-6-1} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-6-2} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-6-3} \includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-6-4} \caption{Power-Power curve, comparison to the best performing method in that specific scenario setting. Left column is specified for a total sample size 20 and the right column for a total sample size 200.  }\label{fig:unnamed-chunk-6}
-\end{figure}
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-10-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-10-2}
+\textbackslash caption\{Left:(n=20) TTest\_VarEqual has the largest
+power in 31 of the 225 scenarios, which is 13.78 \% of the scenarios.
+The median of the power differences for scenarios where TTest\_VarEqual
+has smaller power than the best test is 0.0866 --- Right: (n=200)
+TTest\_VarEqual has the largest power in 5 of the 225 scenarios, which
+is 2.22 \% of the scenarios. The median of the power differences for
+scenarios where TTest\_VarEqual has smaller power than the best test is
+0.162\}\label{fig:unnamed-chunk-10} \textbackslash end\{figure\}
+
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-12-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-12-2}
+\textbackslash caption\{Left:(n=20) TTest\_VarUnequal has the largest
+power in 8 of the 225 scenarios, which is 3.56 \% of the scenarios. The
+median of the power differences for scenarios where TTest\_VarUnequal
+has smaller power than the best test is 0.0455 --- Right: (n=200)
+TTest\_VarUnequal has the largest power in 5 of the 225 scenarios, which
+is 2.22 \% of the scenarios. The median of the power differences for
+scenarios where TTest\_VarUnequal has smaller power than the best test
+is 0.1622\}\label{fig:unnamed-chunk-12} \textbackslash end\{figure\}
+
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-14-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-14-2}
+\textbackslash caption\{Left:(n=20) Yuen has the largest power in 7 of
+the 225 scenarios, which is 3.11 \% of the scenarios. The median of the
+power differences for scenarios where Yuen has smaller power than the
+best test is 0.0758 --- Right: (n=200) Yuen has the largest power in 1
+of the 225 scenarios, which is 0.44 \% of the scenarios. The median of
+the power differences for scenarios where Yuen has smaller power than
+the best test is 0.029\}\label{fig:unnamed-chunk-14}
+\textbackslash end\{figure\}
+
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-16-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-16-2}
+\textbackslash caption\{Left:(n=20) BM has the largest power in 2 of the
+5 scenarios, which is 40 \% of the scenarios. The median of the power
+differences for scenarios where BM has smaller power than the best test
+is 0.0387 --- Right: (n=200) BM has the largest power in 8 of the 212
+scenarios, which is 3.77 \% of the scenarios. The median of the power
+differences for scenarios where BM has smaller power than the best test
+is 0.0179\}\label{fig:unnamed-chunk-16} \textbackslash end\{figure\}
+
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-18-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-18-2}
+\textbackslash caption\{Left:(n=20) VW has the largest power in 1 of the
+225 scenarios, which is 0.44 \% of the scenarios. The median of the
+power differences for scenarios where VW has smaller power than the best
+test is 0.0377 --- Right: (n=200) VW has the largest power in 0 of the
+207 scenarios, which is 0 \% of the scenarios. The median of the power
+differences for scenarios where VW has smaller power than the best test
+is 0.02\}\label{fig:unnamed-chunk-18} \textbackslash end\{figure\}
+
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-20-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-20-2}
+\textbackslash caption\{Left:(n=20) Mood has the largest power in 0 of
+the 225 scenarios, which is 0 \% of the scenarios. The median of the
+power differences for scenarios where Mood has smaller power than the
+best test is 0.1575 --- Right: (n=200) Mood has the largest power in 0
+of the 225 scenarios, which is 0 \% of the scenarios. The median of the
+power differences for scenarios where Mood has smaller power than the
+best test is 0.1337\}\label{fig:unnamed-chunk-20}
+\textbackslash end\{figure\}
+
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-22-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-22-2}
+\textbackslash caption\{Left:(n=20) HFR has the largest power in 28 of
+the 115 scenarios, which is 24.35 \% of the scenarios. The median of the
+power differences for scenarios where HFR has smaller power than the
+best test is 0.0523 --- Right: (n=200) HFR has the largest power in 8 of
+the 183 scenarios, which is 4.37 \% of the scenarios. The median of the
+power differences for scenarios where HFR has smaller power than the
+best test is 0.0116\}\label{fig:unnamed-chunk-22}
+\textbackslash end\{figure\}
+
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-24-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-24-2}
+\textbackslash caption\{Left:(n=20) WMW\_Asymp has the largest power in
+1 of the 225 scenarios, which is 0.44 \% of the scenarios. The median of
+the power differences for scenarios where WMW\_Asymp has smaller power
+than the best test is 0.0478 --- Right: (n=200) WMW\_Asymp has the
+largest power in 8 of the 225 scenarios, which is 3.56 \% of the
+scenarios. The median of the power differences for scenarios where
+WMW\_Asymp has smaller power than the best test is
+0.0193\}\label{fig:unnamed-chunk-24} \textbackslash end\{figure\}
+
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-26-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-26-2}
+\textbackslash caption\{Left:(n=20) SmoothFixed\_4\_asymp has the
+largest power in 24 of the 225 scenarios, which is 10.67 \% of the
+scenarios. The median of the power differences for scenarios where
+SmoothFixed\_4\_asymp has smaller power than the best test is 0.132 ---
+Right: (n=200) SmoothFixed\_4\_asymp has the largest power in 23 of the
+225 scenarios, which is 10.22 \% of the scenarios. The median of the
+power differences for scenarios where SmoothFixed\_4\_asymp has smaller
+power than the best test is 0.071\}\label{fig:unnamed-chunk-26}
+\textbackslash end\{figure\}
+
+\textbackslash begin\{figure\}{[}H{]}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-28-1}
+\includegraphics[width=0.5\linewidth]{report_files/figure-latex/unnamed-chunk-28-2}
+\textbackslash caption\{Left:(n=20) SmoothFixed\_6\_asymp has the
+largest power in 0 of the 225 scenarios, which is 0 \% of the scenarios.
+The median of the power differences for scenarios where
+SmoothFixed\_6\_asymp has smaller power than the best test is 0.4511 ---
+Right: (n=200) SmoothFixed\_6\_asymp has the largest power in 0 of the
+225 scenarios, which is 0 \% of the scenarios. The median of the power
+differences for scenarios where SmoothFixed\_6\_asymp has smaller power
+than the best test is 0.8241\}\label{fig:unnamed-chunk-28}
+\textbackslash end\{figure\}
 
 \hypertarget{power-power-curve}{%
 \subsection{4. Power-Power curve}\label{power-power-curve}}
@@ -279,7 +463,7 @@ scenarios with symmetrical distributions (with equal sample sizes), but
 less in scenarios with opposite skewed distributions and heavy tailed
 distributions.\\
 In general, the methods perform well for the distributions and scenarios
-they are developed for. The methods are distinguised from each other in
+they are developed for. The methods distinguish from each other in
 scenarios that have small sample size and/or unequal balanced design, in
 combination with skewed and heavy tailed distributions. Here, the more
 robust methods such as AD, CVM perform better.
