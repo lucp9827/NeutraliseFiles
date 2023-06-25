@@ -135,7 +135,7 @@ In terms of Type I error rate control the results has shown that the Welch test 
 In general, the methods perform well for the distributions and scenarios they are developed for. The methods distinguish from each other in scenarios that have small sample size and/or unequal balanced design, in combination with skewed and heavy tailed distributions. Here, the more robust methods such as AD, CVM perform better.
 
 ## 6. Appendix
-<table style='width:30%; font-family: "Arial Narrow", "Source Sans Pro", sans-serif; width: auto !important; margin-left: auto; margin-right: auto; width: auto !important; margin-left: auto; margin-right: auto;' class=" lightable-classic table table-striped">
+<table style='width:10%; font-family: "Arial Narrow", "Source Sans Pro", sans-serif; width: auto !important; margin-left: auto; margin-right: auto; width: auto !important; margin-left: auto; margin-right: auto;' class=" lightable-classic table table-striped">
 <caption>Table 1: Summary of included methods</caption>
  <thead>
   <tr>
