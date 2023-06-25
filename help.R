@@ -49,9 +49,13 @@ All_Neutralised_Scenarios<-function(data, type='power') {
 Power_QQ<-function(method1,method2,results_list,alpha=0.05,
                    par.fix=NULL,
                    data=NULL,
-                   col="black",group=FALSE,CI=FALSE, filter=TRUE) {
+                   col="black",group=FALSE,CI=FALSE, filter=TRUE,n="") {
   # data = data generation tool
-
+  dis = c("Normal","Normal2Var","Cauchy","Exp","ghEqual","ghEqualK","GLDLS","Logistic")
+  scen  = c(18,18,36,30,35,35,25,28)
+  scen_al = scen*4
+  
+  hope = data.frame(distribution=dis, scenarios=scen, scenarios_sample=scen_al)
   # Read finished file
   finished<-read.csv("results/Finished.txt",sep=",",header=T)
 
@@ -75,7 +79,7 @@ Power_QQ<-function(method1,method2,results_list,alpha=0.05,
   cnt.scenarios<-0
   cnt<-1
   text_group=c()
-
+  text_mis1=c()
   for(d in data.i) {
 
     results1_tmp = results_list[[d]][results_list[[d]]$method==method1,]
@@ -133,23 +137,42 @@ Power_QQ<-function(method1,method2,results_list,alpha=0.05,
 
 
     tt2 = remove_missing(tt1)
+      
+      
+      if (n!=""){
+        tt2=tt2[tt2$n==n,]
+        hope$number = hope$scenarios
+      }else{
+        hope$number = hope$scenarios_sample
+      }
+      
+      
 
     win2<-win2+sum(tt2[,'power.x'] < tt2[,'power.y'])
     cnt.scenarios<-cnt.scenarios+length(tt2[,'power.x'] < tt2[,'power.y'])
 
     if (group){
       win_tmp = sum(tt2[,'power.x'] < tt2[,'power.y'])
-      text_group=c(text_group,paste(d,": ",method2," wins over ",method1, " in ", round(100*win_tmp/length(tt2[,'power.x'] < tt2[,'power.y']),1),
-                                    "% of the ",length(tt2[,'power.x'] < tt2[,'power.y']), " scenarios\n",sep=""))
-    }
+      text_group=c(text_group,paste(d,": ",method2," has higher power than ",method1, " in ", round(100*win_tmp/length(tt2[,'power.x'] < tt2[,'power.y']),2),
+                                    "% of the ",length(tt2[,'power.x'] < tt2[,'power.y']), " scenarios where both methods control the type I error rate.\n",sep=""))
+    text_mis1 = c(text_mis1,paste(d,": in ", hope[hope$distribution==d,'number']-length(tt2[,'power.x'] < tt2[,'power.y']), " scenarios at least one method did not control the type I error rate." ))
+      }
 
     total_tmp = rbind(total_tmp,tt2)
   }
 
 
-  txt=(paste(method2," wins over ",method1, " in ", round(100*win2/cnt.scenarios,1),
-             "% of the ", cnt.scenarios, " scenarios\n",sep=""))
+  txt=(paste(method2," has higher power than ",method1, " in ", round(100*win2/cnt.scenarios,2),
+             "% of the ", cnt.scenarios, " scenarios where both methods control the type I error rate.\n",sep=""))
 
+  if (length(data.i)==1){
+    text_mis = c(paste("In ",sum(hope[hope$distribution==data.i,'number'])-cnt.scenarios, " scenarios at least one method did not control the type I error rate." ))
+  }else{
+  text_mis = c(paste("In ",sum(hope$number)-cnt.scenarios, " scenarios at least one method did not control the type I error rate." ))
+  }
+  
+  
+  
   if (!group){
     p<-ggplot(total_tmp,aes(x=power.x,y=power.y))+
       geom_point(colour=col)+
@@ -177,6 +200,7 @@ Power_QQ<-function(method1,method2,results_list,alpha=0.05,
 
   if (group){
     txt=text_group
+    text_mis=text_mis1
   }
 
   if (CI){
@@ -189,7 +213,9 @@ Power_QQ<-function(method1,method2,results_list,alpha=0.05,
         results2=results2,
         total=total_tmp,
         graph=p,
-        text=txt))
+        text=txt,
+        text2=text_mis
+        ))#text2=text_mis
 
 }
 # Function to plot the Type I error rate of one method
@@ -256,30 +282,64 @@ Boxplot_TypeI<-function(method,results,alpha=0.05,tol=0.02,panel="",ylim=c(0,0.1
 
     if(panel=="") {
       p0<-ggplot(results1,aes(x="",y=power))
+      graph=p0+
+        geom_boxplot()+
+        geom_jitter(alpha=0.6,width = 0.2, aes(colour=n),size=3)+
+        lims(y=c(0,0.13))+
+        ylab(paste("Type I error rate of ",
+                   {{method}},sep=""))+
+        geom_hline(yintercept=alpha, linetype="dotted", colour="red",size=1)+
+        geom_hline(yintercept= lowlim,linetype = 'dotted',size=1)+
+        geom_hline(yintercept= uplim, linetype = 'dotted',size=1)+
+        xlab("")+ theme(axis.text.x = element_text(size = 20, angle = 90),
+                        axis.text.y = element_text(size = 20),
+                        axis.title = element_text(size = 19),
+                        strip.text.x = element_text(size = 15),
+                        legend.key.size = unit(1.5, 'cm'),
+                        legend.title = element_text(size=18),legend.text = element_text(size=20))+
+        labs(colour='Sample size (total)')
     }
     if(panel=="distribution") {
+      results1$n=factor(results1$n)
       p0<-ggplot(results1,aes(x=distribution,y=power))
+      graph=p0+
+        geom_boxplot()+
+        geom_jitter(alpha=0.6,width = 0.2, aes(colour=n),size=3)+
+        lims(y=c(0,0.13))+
+        ylab(paste("Type I error rate of ",
+                   {{method}},sep=""))+
+        geom_hline(yintercept=alpha, linetype="dotted", colour="red",size=1)+
+        geom_hline(yintercept= lowlim,linetype = 'dotted',size=1)+
+        geom_hline(yintercept= uplim, linetype = 'dotted',size=1)+
+        xlab("")+ theme(axis.text.x = element_text(size = 20, angle = 90),
+                        axis.text.y = element_text(size = 20),
+                        axis.title = element_text(size = 19),
+                        strip.text.x = element_text(size = 15),
+                        legend.key.size = unit(1.5, 'cm'),
+                        legend.title = element_text(size=18),legend.text = element_text(size=20))+
+        labs(colour='Sample size (total)')
     }
     if(panel=="n") {
       results1$n=factor(results1$n)
       p0<-ggplot(results1,aes(x=n,y=power))
+      graph=p0+
+        geom_boxplot()+
+        geom_jitter(alpha=0.6,width = 0.2, aes(colour=distribution),size=3)+
+        lims(y=c(0,0.13))+
+        ylab(paste("Type I error rate of ",
+                   {{method}},sep=""))+
+        geom_hline(yintercept=alpha, linetype="dotted", colour="red",size=1)+
+        geom_hline(yintercept= lowlim,linetype = 'dotted',size=1)+
+        geom_hline(yintercept= uplim, linetype = 'dotted',size=1)+
+        xlab("")+ theme(axis.text.x = element_text(size = 20, angle = 90),
+                        axis.text.y = element_text(size = 20),
+                        axis.title = element_text(size = 19),
+                        strip.text.x = element_text(size = 15),
+                        legend.key.size = unit(1.5, 'cm'),
+                        legend.title = element_text(size=18),legend.text = element_text(size=20))+
+        labs(colour='Data generation method')
     }
-    graph=p0+
-      geom_boxplot()+
-      geom_jitter(alpha=0.6,width = 0.2, aes(colour=n),size=3)+
-      lims(y=c(0,0.13))+
-      ylab(paste("Type I error rate of ",
-                 {{method}},sep=""))+
-      geom_hline(yintercept=alpha, linetype="dotted", colour="red",size=1)+
-      geom_hline(yintercept= lowlim,linetype = 'dotted',size=1)+
-      geom_hline(yintercept= uplim, linetype = 'dotted',size=1)+
-      xlab("")+ theme(axis.text.x = element_text(size = 20, angle = 90),
-                      axis.text.y = element_text(size = 20),
-                      axis.title = element_text(size = 19),
-                      strip.text.x = element_text(size = 15),
-                      legend.key.size = unit(1.5, 'cm'),
-                      legend.title = element_text(size=18),legend.text = element_text(size=20))+
-      labs(colour='Sample size (total)')
+   
   }else{
 
 
@@ -334,31 +394,67 @@ Boxplot_TypeI<-function(method,results,alpha=0.05,tol=0.02,panel="",ylim=c(0,0.1
       }
     if(panel=="") {
       p0<-ggplot(results1,aes(x="",y=power))
+      graph=p0+
+        geom_boxplot()+
+        geom_jitter(alpha=0.6,width = 0.2, aes(colour=n),size=2)+
+        lims(y=c(0,0.13))+
+        ylab(paste("Type I error rate of ",
+                   {{method}},sep=""))+
+        geom_hline(yintercept=alpha, linetype="dotted", colour="red",size=1)+
+        geom_hline(yintercept= lowlim,linetype = "dotted",size=1)+
+        geom_hline(yintercept= uplim, linetype = "dotted",size=1) +
+        xlab("")+
+        facet_wrap(~method,ncol=3)+ theme(axis.text.x = element_text(size = 20, angle = 90),
+                                          axis.text.y = element_text(size = 20),
+                                          axis.title = element_text(size = 18),
+                                          strip.text.x = element_text(size = 15),
+                                          legend.key.size = unit(1.5, 'cm'),
+                                          legend.title = element_text(size=18),legend.text = element_text(size=20))+
+        labs(colour='Sample size (total)')
     }
     if(panel=="distribution") {
+      results1$n=factor(results1$n)
       p0<-ggplot(results1,aes(x=distribution,y=power))
+      graph=p0+
+        geom_boxplot()+
+        geom_jitter(alpha=0.6,width = 0.2, aes(colour=n),size=2)+
+        lims(y=c(0,0.13))+
+        ylab(paste("Type I error rate of ",
+                   {{method}},sep=""))+
+        geom_hline(yintercept=alpha, linetype="dotted", colour="red",size=1)+
+        geom_hline(yintercept= lowlim,linetype = "dotted",size=1)+
+        geom_hline(yintercept= uplim, linetype = "dotted",size=1) +
+        xlab("")+
+        facet_wrap(~method,ncol=3)+ theme(axis.text.x = element_text(size = 20, angle = 90),
+                                          axis.text.y = element_text(size = 20),
+                                          axis.title = element_text(size = 18),
+                                          strip.text.x = element_text(size = 15),
+                                          legend.key.size = unit(1.5, 'cm'),
+                                          legend.title = element_text(size=18),legend.text = element_text(size=20))+
+        labs(colour='Sample size (total)')
     }
     if(panel=="n") {
       results1$n=factor(results1$n)
       p0<-ggplot(results1,aes(x=n,y=power))
+      graph=p0+
+        geom_boxplot()+
+        geom_jitter(alpha=0.6,width = 0.2, aes(colour=distribution),size=2)+
+        lims(y=c(0,0.13))+
+        ylab(paste("Type I error rate of ",
+                   {{method}},sep=""))+
+        geom_hline(yintercept=alpha, linetype="dotted", colour="red",size=1)+
+        geom_hline(yintercept= lowlim,linetype = "dotted",size=1)+
+        geom_hline(yintercept= uplim, linetype = "dotted",size=1) +
+        xlab("")+
+        facet_wrap(~method,ncol=3)+ theme(axis.text.x = element_text(size = 20, angle = 90),
+                                          axis.text.y = element_text(size = 20),
+                                          axis.title = element_text(size = 18),
+                                          strip.text.x = element_text(size = 15),
+                                          legend.key.size = unit(1.5, 'cm'),
+                                          legend.title = element_text(size=18),legend.text = element_text(size=20))+
+        labs(colour='Sample size (total)')
     }
-    graph=p0+
-      geom_boxplot()+
-      geom_jitter(alpha=0.6,width = 0.2, aes(colour=n),size=2)+
-      lims(y=c(0,0.13))+
-      ylab(paste("Type I error rate of ",
-                 {{method}},sep=""))+
-      geom_hline(yintercept=alpha, linetype="dotted", colour="red",size=1)+
-      geom_hline(yintercept= lowlim,linetype = "dotted",size=1)+
-      geom_hline(yintercept= uplim, linetype = "dotted",size=1) +
-      xlab("")+
-      facet_wrap(~method,ncol=3)+ theme(axis.text.x = element_text(size = 20, angle = 90),
-                                        axis.text.y = element_text(size = 20),
-                                        axis.title = element_text(size = 18),
-                                        strip.text.x = element_text(size = 15),
-                                        legend.key.size = unit(1.5, 'cm'),
-                                        legend.title = element_text(size=18),legend.text = element_text(size=20))+
-      labs(colour='Sample size (total)')
+    
 
   }
 
@@ -377,18 +473,19 @@ unique_combinations = function(data_gen){
 
 }
 
-Power_curve_ALL<-function(methods,results,alpha=0.05,
+Power_curve_ALL<-function(methods,results,results_power,alpha=0.05,n=40,
                           par.fix=NULL,
                           data=NULL,
                           col="black",group=FALSE,CI=FALSE,neutralise.status) {#,filter
 
   alpha=alpha
   N=10000
-  load('results_typeI_perdatagen.RData')
-  results = results_datagen_type1
+  # load('results_typeI_perdatagen.RData')
+  # results = results_datagen_type1
   
-  load('results_power_perdatagen.RData')
-  results_list = results_datagen
+  #load('results_power_perdatagen.RData')
+  results_list = results_power
+  rm(results_power)
   
   results_list = filter_type1(results,results_power=results_list,alpha)$filter_list
   
@@ -400,9 +497,9 @@ Power_curve_ALL<-function(methods,results,alpha=0.05,
     data_power_dist = results_list[[d]]
     
     if (d=='Normal2Var'){
-      data_type1_dist = results_datagen_type1[['Normal']]
+      data_type1_dist = results[['Normal']]
     }else{
-      data_type1_dist = results_datagen_type1[[d]]}
+      data_type1_dist = results[[d]]}
     data_type1_dist = filter_significance(data_type1_dist,alpha)
     
     uplim = optimise(function(p){(p-sqrt(p*(1-p)/N)*qnorm(alpha/2, mean = 0, sd = 1, lower.tail = FALSE)-alpha)^2}, interval=c(0,1))$minimum
@@ -474,11 +571,12 @@ Power_curve_ALL<-function(methods,results,alpha=0.05,
           power_add= power_add[power_add[,colnr_n]==data_extra$n[1],]
         }
         
-        
+        if (nrow(power_add)!=0){
         data_extra$power = power_add$power
         data_extra$l_CI = power_add$l_CI
         data_extra$u_CI = power_add$u_CI
         data_power_dist_orig = rbind(data_power_dist_orig, data_extra)
+        }else{next}
       }
       
     }
@@ -544,13 +642,18 @@ data.i<-names(results)
 
   end$n=as.factor(end$n)
   end=remove_missing(end)
+  
+  end1= end[end$n==n,]
+  
+  if (n==""){
   if (CI){
     graph=ggplot(end,aes(x=delta,y=power, group=n))+
-      geom_line(aes(col=n))+
+      geom_line(aes(col=n),linewidth=1.3)+
       geom_point(aes(col=n))+
       geom_errorbar(aes(ymin = l_CI, ymax = u_CI,col=n), width = 0.2)+
-      ylim(0:1)+
-      facet_wrap(~method,ncol=3)+ theme(axis.text.x = element_text(size = 15),
+      ylim(0:1)+facet_wrap(~method,ncol=3)+
+      xlab("Difference in means")+
+      theme(axis.text.x = element_text(size = 15),
                                         axis.text.y = element_text(size = 15),
                                         axis.title = element_text(size = 18),
                                         strip.text.x = element_text(size = 15),
@@ -558,16 +661,46 @@ data.i<-names(results)
                                         legend.title = element_text(size=15),legend.text = element_text(size=15))+
       labs(colour='Sample size (total)')}
   else{  graph=ggplot(end,aes(x=delta,y=power, group=n))+
-    geom_line(aes(col=n))+
+    geom_line(aes(col=n),linewidth=1.3)+
     geom_point(aes(col=n))+
-    ylim(0:1)+
-    facet_wrap(~method,ncol=3)+ theme(axis.text.x = element_text(size = 15),
+    ylim(0:1)+ facet_wrap(~method,ncol=3)+
+    xlab("Difference in means")+
+    theme(axis.text.x = element_text(size = 15),
                                       axis.text.y = element_text(size = 15),
                                       axis.title = element_text(size = 18),
                                       strip.text.x = element_text(size = 15),
                                       legend.key.size = unit(1.5, 'cm'),
                                       legend.title = element_text(size=15),legend.text = element_text(size=15))+
     labs(colour='Sample size (total)')
+  }
+    }else{ if (CI){
+    graph=ggplot(end1,aes(x=delta,y=power, group=method))+
+      geom_line(aes(col=method),linewidth=1.3)+
+      geom_point(aes(col=method))+
+      geom_errorbar(aes(ymin = l_CI, ymax = u_CI,col=method), width = 0.2)+
+      xlab("Difference in means")+
+      ylim(0:1)+#facet_wrap(~method,ncol=3)
+      theme(axis.text.x = element_text(size = 15),
+            axis.text.y = element_text(size = 15),
+            axis.title = element_text(size = 18),
+            strip.text.x = element_text(size = 15),
+            legend.key.size = unit(1.5, 'cm'),
+            legend.title = element_text(size=15),legend.text = element_text(size=15))+
+      labs(colour='Data generation method')}
+    else{  graph=ggplot(end1,aes(x=delta,y=power, group=method))+
+      geom_line(aes(col=method),linewidth=1.3)+
+      xlab("Difference in means")+
+      geom_point(aes(col=method))+
+      ylim(0:1)+ #facet_wrap(~method,ncol=3)
+      theme(axis.text.x = element_text(size = 15),
+            axis.text.y = element_text(size = 15),
+            axis.title = element_text(size = 18),
+            strip.text.x = element_text(size = 15),
+            legend.key.size = unit(1.5, 'cm'),
+            legend.title = element_text(size=15),legend.text = element_text(size=15))+
+      labs(colour='Data generation method')
+    
+  }
 
   }
 
@@ -598,6 +731,11 @@ sum_methods = function(){
     name_id = which(tmp=="# NAME")
     name_txt = tmp[name_id+1]
     name_txt = gsub('#','',name_txt)
+    
+    hep_id = which(tmp=="# HYPOTHESIS")
+    hep_txt = tmp[hep_id+1]
+    hep_txt = gsub('#','',hep_txt)
+    
 
     des_id = which(tmp=="# DESCRIPTION")
     des_txt = tmp[des_id+1]
@@ -609,7 +747,7 @@ sum_methods = function(){
 
     abbriv_txt=gsub('.R','',filename_temp)
 
-    text_tmp= data.frame(Abbriviation=abbriv_txt,Name=name_txt,Description=des_txt,References=ref_txt)
+    text_tmp= data.frame(Abbriviation=abbriv_txt,Name=name_txt,Hypotheses=hep_txt,Description=des_txt,References=ref_txt)
 
     text=rbind(text,text_tmp)
   }
@@ -667,8 +805,11 @@ filter_significance = function(results,alpha){
   return(results_tmp)
 }
 
-moments_curve = function(method,alpha,moment='mom3_1',n=n,results,group=FALSE,filter=FALSE){
+moments_curve = function(method,alpha,moment='mom3_1',n=n,results,group=FALSE,filter=FALSE,ylabs,ylim=c(0,1)){
 
+  
+  results = results[results$distribution!="Cauchy",]
+  
   if (filter==FALSE){
     results_tmp = filter_significance(results,alpha)
   }else{
@@ -684,11 +825,54 @@ moments_curve = function(method,alpha,moment='mom3_1',n=n,results,group=FALSE,fi
     }
 
    results_end = results_tmp_method[,moment]
+   
+   
+   if(moment=='mom1_1'){
+     tekst = "Difference in means"
+     results_end = results_tmp_method[,'mom1_2']-results_tmp_method[,'mom1_1']
+   }
+   
+   if(moment=='mom1_2'){
+     tekst = "Difference in means"
+     results_end = results_tmp_method[,'mom1_2']-results_tmp_method[,'mom1_1']
+   }
+   
+   
+   if(moment=='mom2_1'){
+     tekst = "Ratio of Variances"
+     results_end = results_tmp_method[,'mom2_1']/results_tmp_method[,'mom2_2']
+     
+   }
+   
+   if(moment=='mom2_2'){
+     tekst = "Ratio of Variances"
+     results_end = results_tmp_method[,'mom2_1']/results_tmp_method[,'mom2_2']
+   }
+
+   
+   if(moment=='mom3_1'){
+     tekst = "Skewness"
+   }
+   
+   if(moment=='mom3_2'){
+     tekst = "Skewness"
+   } 
+   
+   if(moment=='mom4_1'){
+     tekst = "Kurtosis"
+   }
+   
+   if(moment=='mom4_2'){
+     tekst = "Kurtosis"
+   } 
+   
+   
 
   graph = ggplot(results_tmp_method,aes(x=results_end,y=power,group=distribution))+
     geom_point(aes(col=distribution),size=3)+
-    xlab(moment)+
-    ylim(0:1)+
+    xlab(tekst)+
+    ylab(ylabs)+
+    ylim(ylim)+
   facet_wrap(~method,ncol=3)+ theme(axis.text.x = element_text(size = 15),
                                     axis.text.y = element_text(size = 15),
                                     axis.title = element_text(size = 18),
@@ -1004,8 +1188,8 @@ best_method_plot = function(name_extra,n=20,results_df,filter=TRUE,alpha=0.05,na
   tt = merge(results_1_method,df,by='scenario')
   tt1=remove_missing(tt)
 
-  txt=paste(name_extra,'wins in',sum(tt1$power.x>tt1$power.y,na.rm=TRUE),'of the ',length(tt1$power.x),'scenarios')
-
+  txt=paste(name_extra,'has higher power in ',sum(tt1$power.x>tt1$power.y,na.rm=TRUE),'of the ',length(tt1$power.x),'scenarios where the type I error rate is controlled.')
+  txt_mis = paste("In ", 225-length(tt1$power.x)," scenarios the type I error rate is not contolled at the nominal level.")
   p <- ggplot(tt1,aes(x=power.y,y=power.x))+
     geom_point(aes(colour=factor(distribution.x)),size=3)+
     ylim(0,1)+xlim(0,1)+
@@ -1018,6 +1202,6 @@ best_method_plot = function(name_extra,n=20,results_df,filter=TRUE,alpha=0.05,na
                                                  legend.key.size = unit(1, 'cm'),
                                                  legend.title = element_text(size=15),legend.text = element_text(size=15))
 
-  return(list(graph=p,data=tt1,text=txt))
+  return(list(graph=p,data=tt1,text=txt,text_mis = txt_mis))
 }
 
