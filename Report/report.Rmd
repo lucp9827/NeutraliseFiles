@@ -32,24 +32,14 @@ sessionInfo()
 
 ```{r,echo=F}
 knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Desktop\\Neutralise_end_Dash - report")
-#methods= data.frame(sum_methods())
-load("C:/Users/lucp9827/Desktop/Neutralise_end_Dash - Copy/table.RData")
- methods=allleee
+
+methods= data.frame(sum_methods())
+
 kable(methods[,c(1,2,4,5)],booktabs=T,caption = "Table 1: Summary of included methods",table.attr="style='width:30%;'")%>%kable_classic(full_width = F, position = "center" )%>%
   kable_styling(bootstrap_options = "striped", full_width = FALSE)
 
 kable(methods[,c(1,3,5)],booktabs=T,caption = "Table 1: Summary of included methods",table.attr="style='width:30%;'")%>%kable_classic(full_width = F, position = "center" )%>%
   kable_styling(bootstrap_options = "striped", full_width = FALSE)
-
-
-  # kable_styling(latex_options=c("HOLD_position"),full_width = FALSE)%>%
-  # column_spec(1, width = "10%") %>%
-  # column_spec(2, width = "10%") %>%
-  # column_spec(3, width = "30%") %>%
-  # column_spec(4, width = "20%")%>%
-  # column_spec(5, width = "20%")
-
-  #landscape()
 
 ```
 
