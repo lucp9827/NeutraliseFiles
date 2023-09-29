@@ -726,8 +726,8 @@ data.i<-names(results)
 ## Function to summarize methods
 sum_methods = function(){
 
-  method.files<-dir(path=paste("methods",sep=""))
-  load(paste("results/neutralisestatus.RData",sep=""))
+  method.files<-dir(path=paste("Methods",sep=""))
+  load(paste("Results/neutralisestatus.RData",sep=""))
   method.exists<-method.files%in%neutralise.status$file.name[
     (neutralise.status$type=="method")&
       (neutralise.status$check==TRUE)]
@@ -738,7 +738,7 @@ sum_methods = function(){
 
     filename_temp=method.files[i]
 
-    filename<-paste("methods/",filename_temp,sep="")
+    filename<-paste("Methods/",filename_temp,sep="")
 
     con=file(filename,"r")
     tmp<-readLines(con,n=-1)

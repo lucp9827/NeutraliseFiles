@@ -7,7 +7,7 @@ library(rintrojs)
 
 source("help.R")
 
-load(file = "results/neutralisestatus.RData")
+load(file = "Results/neutralisestatus.RData")
 
 names_methods=(All_Neutralised(neutralise.status))
 
