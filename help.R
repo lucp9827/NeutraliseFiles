@@ -54,8 +54,10 @@ Power_QQ<-function(method1,method2,results_list,alpha=0.05,
   dis = c("Normal","Normal2Var","Cauchy","Exp","ghEqual","ghEqualK","GLDLS","Logistic")
   scen  = c(18,18,36,30,35,35,25,28)
   scen_al = scen*4
+  scen_per = scen_al/c(3,3,6,5,7,7,5,4)
+  scen_tt = scen_per/4
   
-  hope = data.frame(distribution=dis, scenarios=scen, scenarios_sample=scen_al)
+  hope = data.frame(distribution=dis, scenarios=scen, scenarios_sample=scen_al,scen_per=scen_per,scen_tt=scen_tt)
   # Read finished file
   finished<-read.csv("results/Finished.txt",sep=",",header=T)
 
@@ -145,8 +147,15 @@ Power_QQ<-function(method1,method2,results_list,alpha=0.05,
       }else{
         hope$number = hope$scenarios_sample
       }
-      
-      
+    
+    if((!is.null(par.fix))&(n=="")){
+      hope$number = hope$scen_per
+    }
+    if((!is.null(par.fix))&(n!="")){
+      hope$number = hope$scen_tt
+    }
+    
+    
 
     win2<-win2+sum(tt2[,'power.x'] < tt2[,'power.y'])
     cnt.scenarios<-cnt.scenarios+length(tt2[,'power.x'] < tt2[,'power.y'])
@@ -155,7 +164,12 @@ Power_QQ<-function(method1,method2,results_list,alpha=0.05,
       win_tmp = sum(tt2[,'power.x'] < tt2[,'power.y'])
       text_group=c(text_group,paste(d,": ",method2," has higher power than ",method1, " in ", round(100*win_tmp/length(tt2[,'power.x'] < tt2[,'power.y']),2),
                                     "% of the ",length(tt2[,'power.x'] < tt2[,'power.y']), " scenarios where both methods control the type I error rate.\n",sep=""))
-    text_mis1 = c(text_mis1,paste(d,": in ", hope[hope$distribution==d,'number']-length(tt2[,'power.x'] < tt2[,'power.y']), " scenarios at least one method did not control the type I error rate." ))
+    
+      
+      
+      text_mis1 = c(text_mis1,paste(d,": in ", hope[hope$distribution==d,'number']-length(tt2[,'power.x'] < tt2[,'power.y']), " scenarios at least one method did not control the type I error rate." ))
+      
+      
       }
 
     total_tmp = rbind(total_tmp,tt2)
@@ -487,7 +501,7 @@ Power_curve_ALL<-function(methods,results,results_power,alpha=0.05,n=40,
   results_list = results_power
   rm(results_power)
   
-  results_list = filter_type1(results,results_power=results_list,alpha)$filter_list
+  #results_list = filter_type1(results,results_power=results_list,alpha)$filter_list
   
   
   end = list()
@@ -511,10 +525,12 @@ Power_curve_ALL<-function(methods,results,results_power,alpha=0.05,n=40,
     colnr_1 = grep('delta',colnames(data_power_dist))+1
     colnr_2 = grep('power',colnames(data_power_dist))-1
     colnr_n = grep('cnt',colnames(data_power_dist))+1
-    colnr_m = grep('method', colnames(data_type1_dist))
+    #colnr_m = grep('method', colnames(data_type1_dist))
     if(colnr_2-colnr_1>2){
       ind=c(colnr_1,colnr_1+1,colnr_n)
     }else{ind = c(colnr_1,colnr_n)}
+    
+    
     data_type1_dist = remove_missing(data_type1_dist)
     data_power_dist = remove_missing(data_power_dist)
     data_power_dist_orig = data_power_dist
@@ -906,8 +922,9 @@ filter_type1 = function(results,results_power,alpha){
     }
 
     results_tmp=filter_significance(results_id,alpha)
+    rm(results_id)
 
-    #results_tmp$control= results_tmp$power>=lowlim&results_tmp$power<=uplim
+
     results_tmp$control= results_tmp$power<=uplim
     results_tmp[is.na(results_tmp$control),'control']<-FALSE
 
@@ -1094,8 +1111,8 @@ best_method = function(results_df,name_methods=NULL,name_extra=NULL,alpha=0.01,n
   # results=subset(results,select=-mom3_1)
   # results=subset(results,select=-mom4_1)
 
-  if (filter){
-    results = filter_significance(results_df,alpha)}
+  # if (filter){
+  #   results = filter_significance(results_df,alpha)}
 
   if (is.null(name_methods)){
     name_methods = unique(results$method)
@@ -1176,9 +1193,9 @@ best_method = function(results_df,name_methods=NULL,name_extra=NULL,alpha=0.01,n
 best_method_plot = function(name_extra,n=20,results_df,filter=TRUE,alpha=0.05,name_methods=NULL){
 
   results_1_method = results_df[results_df$method==name_extra &results_df$n==n,]
-  if (filter==TRUE){
-    results_1_method =filter_significance(results_1_method,alpha)
-  }
+  # if (filter==TRUE){
+  #   results_1_method =filter_significance(results_1_method,alpha)
+  # }
 
   df = best_method(results_df,name_methods,name_extra=name_extra ,alpha,n,filter)$all_one
 
