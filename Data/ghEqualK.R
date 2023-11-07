@@ -1,5 +1,6 @@
 # DESCRIPTION
-# simulation of g-and-h distribution
+# Simulation of the g-and-h distribution, with an equal scale parameter in both groups and a kurtosis parameter = 0.20 in both groups.
+
 Data.Generator<-function(n1=10,n2=10,parameters=c(0,1,2,3,4)) {
   
   delta<-parameters[1]

@@ -1,7 +1,7 @@
 # NAME
 # Mood's median test
 # DESCRIPTION
-# Performs a Mood's median test to compare medians of independent samples.
+# Performs a Mood's median test to compare medians of independent samples. A Fisher's exact test is used if the number of data values is < 200; otherwise a chi-square test is used, with Yates continuity correction if necessary
 # HYPOTHESIS
 # The null hypothesis is defined for testings equality of medians, while assuming that the distributions are otherwise the same. The alternative states that the medians are different in both groups.
 # REFERENCES

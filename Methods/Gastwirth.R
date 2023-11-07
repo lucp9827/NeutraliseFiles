@@ -1,7 +1,7 @@
 # NAME
 # Percentile Modified Wilcoxon-Mann-Whitney test
 # DESCRIPTION
-# The Percentile Modified Wilcoxon-Mann-Whitney test of Gastwirth (1965) with p=r. P-values are calculated from the normal approximation.
+# The Percentile Modified Wilcoxon-Mann-Whitney test of Gastwirth (1965) with P = R = (15% * total sample size)+ 1. P-values are calculated from the normal approximation.
 # HYPOTHESIS
 # The null hypothesis is defined as P(X<=Y)= 0.5, which coincides with the equality of distributions under the assumption of symmetry and equal shape. The alternative hypothesis is that P(X<=Y) is not equal to 0.5, which can be interpreted as a location shift. 
 # REFERENCES

@@ -1,5 +1,6 @@
 # DESCRIPTION
-# simulation of Cauchy distribution
+# Simulation of the Cauchy distribution
+
 Data.Generator<-function(n1=10,n2=10,parameters=c(0,1,2)){
   
   delta<-parameters[1]

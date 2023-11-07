@@ -1,5 +1,6 @@
 # DESCRIPTION
 # The Generalized Tukey Lambda distribution -> generates skew distributions, consider only locationshift
+
 Data.Generator<-function(n1=10,n2=10,parameters=c(0,1,2,3)) {
   
   delta <-parameters[1]

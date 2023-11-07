@@ -1,5 +1,5 @@
 # DESCRIPTION
-# simulation of two logistic distributions with equal variance
+# Simulation of two logistic distributions with equal variance
 
 Data.Generator<-function(n1=10,n2=10,parameters=c(0,1)) {
   delta<-parameters[1]

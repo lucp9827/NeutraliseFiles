@@ -1,5 +1,6 @@
 # DESCRIPTION
-# simulation of exponential distribution
+# Simulation of the exponential distribution
+
 Data.Generator<-function(n1=10,n2=10,parameters=c(0,1)) {
   delta<-parameters[1]
   rate1<-parameters[2]
