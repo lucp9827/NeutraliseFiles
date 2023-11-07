@@ -1,0 +1,250 @@
+---
+title: "Simulation scenarios"
+author: 
+date: 
+output: 
+  html_document:
+    keep_md: yes
+---
+
+```{r setup,echo=F,include=F}
+# Load required packages
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+knitr::opts_chunk$set(fig.width=12, fig.height=8) 
+knitr::opts_chunk$set(fig.pos = 'H')
+library(Neutralise)
+library(ggplot2)
+library(knitr)
+library(dplyr)
+library(kableExtra)
+sessionInfo()
+```
+
+## Simulation scenarios
+
+```{r,echo=F}
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+ load("~/NeutraliseFiles/parameter_explanation.RData")
+end=data.frame()
+names = names(parameter_explanation)
+
+for (i in (1:length(names))){
+  
+  filename_temp=names[i]
+  
+  filename<-paste("Data/",filename_temp,".R",sep="")
+  
+  con=file(filename,"r")
+  tmp<-readLines(con,n=-1)
+  close(con)
+  
+  name_id = which(tmp=="# DESCRIPTION")
+  name_txt = tmp[name_id+1]
+  name_txt = gsub('#','',name_txt)
+  
+  
+  
+parameter =paste(parameter_explanation[[names[i]]]$parameter,
+              parameter_explanation[[names[i]]]$description, sep=" = ")
+
+parameters = paste(parameter, collapse = ", ")
+scenarios = nrow(Neutralise::All_Neutralised_Scenarios(path,names[i],type='power'))
+
+df = cbind(names[i],name_txt,parameters,scenarios)
+
+end = rbind(end,df)}
+
+colnames(end)=c("Data Generation method","Description","Parameters","Scenarios per sample size setting")
+
+
+kable(end,format = "html",table.attr = "style='width:100%;'",caption = "Table 1: Summary of included data generation methods per sample size setting. There are 3 balanced sample size settings included of which the total sample size (n1+n2) is equal to 20,40 and 200. One unbalenced sample size setting was included, n1=10 and n2=100.")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+
+## Simulation scenarios per Data Generation method. 
+
+### Normal 
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"Normal",type="typeI")
+
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 2a: Type I error rate scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"Normal")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 2b: Power scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+### Normal2Var 
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"Normal",type="typeI")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 3a: Type I error rate scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"Normal2Var")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 3b: Power scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+### Cauchy
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"Cauchy",type="typeI")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 4a: Type I error rate scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"Cauchy")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 4b: Power scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+### Exp
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"Exp",type="typeI")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 5a: Type I error rate scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"Exp")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 5b: Power scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+### ghEqual
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"ghEqual",type="typeI")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 6a: Type I error rate scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"ghEqual")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 6b: Power scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+### ghEqualK
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"ghEqualK",type="typeI")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 7a: Type I error rate scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"ghEqualK")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 7b: Power scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+### GLDLS
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"GLDLS",type="typeI")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 8a: Type I error rate scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"GLDLS")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 8b: Power scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+### Logistic
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"Logistic",type="typeI")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 9a: Type I error rate scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+```{r,echo=F}
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+
+res= All_Neutralised_Scenarios(path,"Logistic")
+rownames(res)=res$id
+
+kable(res,format = "html",table.attr = "style='width:100%;'",caption = "Table 9b: Power scenarios ")%>%
+kable_styling(bootstrap_options = "striped")
+```
