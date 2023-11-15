@@ -244,17 +244,17 @@ All the results shown in this report can be reproduced using the data in Neutral
 
 ## 2. Type I error rate control
 
-[**Summary:**]{.underline}
+**Summary:**
 
-1.  [Aim:]{.underline}
+1.  Aim:
 
     Screen methods under H~0~ scenarios and explore Type I error rate control at the nominal level of 5%.
 
-2.  [Procedure:]{.underline}
+2.  Procedure:
 
     Methods with a Type I error rate that is above the largest acceptable estimated Type I error rate are filtered out for this specific scenario (i.e. liberal methods). This is based on 10000 simulation runs.
 
-3.  [Results:]{.underline}
+3.  Results:
 
     -   **The percentile modified asymptotic Wilcoxon-Mann-Whitney test (Gastwirth)** can be considered as a method that is too liberal for all included scenarios, especially for small sample sizes.
 
@@ -286,17 +286,17 @@ The asymptotic Kolmogorov-Smirnov test and Mood's median test have a Type I erro
 
 ## 3. Power-power curve: Best method
 
-[**Summary:**]{.underline}
+**Summary:**
 
-1.  [Aim:]{.underline}
+1.  Aim:
 
     Selecting a few methods with overall a high power in different scenarios.
 
-2.  [Procedure:]{.underline}
+2.  Procedure:
 
     The methods are compared with the 'best method' in each scenario of sample size 10 and 100 (per group). When points (scenarios) are situated above the diagonal of the plot, the specified method is performing better than the 'best method(s)' of all other included methods. When points (scenarios) are situated below the diagonal of the plot, the 'best method(s)' of all other included methods performs better that the specified method. Scenarios in which the method is too liberal in the Type I error rate control were filtered out (see section 2).
 
-3.  [Results:]{.underline}
+3.  Results:
 
     -   **KS and Mood** show plots that reflect a low power in comparison to the best performing methods (results mainly under the diagonal). This is also a reflection of the conservative Type I error rate (section 2).
 
@@ -413,17 +413,17 @@ For the WMW test, the power-power plot shows that the test has at least similar 
 
 ## 4. Power-Power curve
 
-[**Summary:**]{.underline}
+**Summary:**
 
-1.  [Aim:]{.underline}
+1.  Aim:
 
     Comparing the selected methods in section 3, and use the empirically computed moments of the scenarios to understand the differences.
 
-2.  [Procedure:]{.underline}
+2.  Procedure:
 
     The methods are compared with each other in all scenarios where they both control the Type I error rate. When points (scenarios) are situated close to the diagonal, the methods behave similar in power. When the points are further away from the diagonal, one methods outperforms the other method. The Shiny app of Neutralise is used to get more information about the empirically computed moments.
 
-3.  [Results:]{.underline}
+3.  Results:
 
     -   **AD vs CVM:**
 
