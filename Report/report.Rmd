@@ -1,25 +1,20 @@
 ---
 title: 'Neutralise: Annual Summary Report'
-author: ""
-date: ""
-output:  
-  html_document: 
-    keep_md: true
-  word_document: default
-  pdf_document: 
-    extra_dependencies: ["float"]
+author: ''
+date: ''
+output:
+  html_document:
+    keep_md: yes
 ---
 
-In this report, we will summarize the results of methods that have been neutralized and show the results that give more insights to the method and simulation scenarios. In section 1, the methods included in this framework will be summarized. In section 2, we will show the type I error rate control of all methods per data generation method. In section 3, the power-power plots of a few selected methods will be discussed, as well as the power-power plots that compare a method to the best results over the different scenario's.
+In this report, we will summarize the results of methods that have been neutralized and show the results that give more insights to the method and simulation scenarios. In section 1, the methods and data generation methods included in this framework will be summarized. In section 2, we will show the type I error rate control of all methods per data generation method. In section 3, the power-power plots of a few selected methods will be discussed, as well as the power-power plots that compare a method to the best results over the different scenario's. Every section, starting from section 2, will start with a brief summary of the results. More details can be found in the text below or for more numerical details the shiny app can be used (\<<https://dsi-uhasselt.shinyapps.io/Neutralise/>\<).
 
-All the results shown in this report can be reproduced using the data in NeutraliseFiles or in the shiny app. This report is the results of choices made by the author, which can be viewed as not neutral. However, we believe that this report doesn't jeopardize the Neutralise initiative as all the results in this report can be reproduced. These results, as well as the results that are not included in this report, are publicly available and can be consulted. This report has been produced with Neutralise (v0.1.0).
-
-## 1. Methods
+All the results shown in this report can be reproduced using the data in NeutraliseFiles or in the shiny app. This report is the results of choices made by the author, which can be viewed as not neutral. However, we believe that this report doesn't jeopardize the Neutralise initiative as all the results in this report can be reproduced. These results, as well as the results that are not included in this report, are publicly available and can be consulted. This report has been produced with Neutralise (v0.1.0) and NeutraliseFiles (v0.1.0).
 
 ```{r setup,echo=F,include=F}
 # Load required packages
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Desktop\\Neutralise_end_Dash - report")
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
 knitr::opts_chunk$set(fig.width=12, fig.height=8) 
 knitr::opts_chunk$set(fig.pos = 'H')
 library(Neutralise)
@@ -30,36 +25,163 @@ library(kableExtra)
 sessionInfo()
 ```
 
+## 1. Information
+
+### 1.1 Methods
+
 ```{r,echo=F}
-knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Desktop\\Neutralise_end_Dash - report")
+knitr::opts_knit$set(root.dir = "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles")
 
 methods= data.frame(sum_methods())
 
-kable(methods[,c(1,2,4,5)],booktabs=T,caption = "Table 1: Summary of included methods",table.attr="style='width:30%;'")%>%kable_classic(full_width = F, position = "center" )%>%
-  kable_styling(bootstrap_options = "striped", full_width = FALSE)
+kable(methods,format = "html",table.attr = "style='width:100%;'",caption = "Table 1: Summary of included methods")%>%
+   kable_styling(bootstrap_options = "striped")%>%
+    kable_paper() %>%
+  scroll_box(width = "1000px", height = "500px")
+  
+#kable_styling(bootstrap_options = "striped", full_width = FALSE)%>%
+#  column_spec(3, width = "20em", background = "yellow")%>%
+#  column_spec(5, width = "10em", background = "yellow")%>%
 
-kable(methods[,c(1,3,5)],booktabs=T,caption = "Table 1: Summary of included methods",table.attr="style='width:30%;'")%>%kable_classic(full_width = F, position = "center" )%>%
-  kable_styling(bootstrap_options = "striped", full_width = FALSE)
 
+# kable(methods[,c(1,2,4)],booktabs=T,caption = "Table 2: Summary of included methods",table.attr="style='width:30%;'")%>%kable_classic(full_width = F, position = "center" )%>%
+#   kable_styling(bootstrap_options = "striped", full_width = FALSE)
+# 
+# kable(methods[,c(1,3,5)],booktabs=T,caption = "Table 2: Summary of included methods",table.attr="style='width:30%;'")%>%kable_classic(full_width = F, position = "center" )%>%
+#   kable_styling(bootstrap_options = "striped", full_width = FALSE)
+
+```
+
+### 1.2 Simulation scenarios
+
+```{r,echo=F}
+path= "C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
+ load("~/NeutraliseFiles/parameter_explanation.RData")
+end=data.frame()
+names = names(parameter_explanation)
+
+for (i in (1:length(names))){
+  
+  filename_temp=names[i]
+  
+  filename<-paste("Data/",filename_temp,".R",sep="")
+  
+  con=file(filename,"r")
+  tmp<-readLines(con,n=-1)
+  close(con)
+  
+  name_id = which(tmp=="# DESCRIPTION")
+  name_txt = tmp[name_id+1]
+  name_txt = gsub('#','',name_txt)
+  
+  
+  
+parameter =paste(parameter_explanation[[names[i]]]$parameter,
+              parameter_explanation[[names[i]]]$description, sep=" = ")
+
+parameters = paste(parameter, collapse = ", ")
+scenarios = nrow(Neutralise::All_Neutralised_Scenarios(path,names[i],type='power'))
+
+df = cbind(names[i],name_txt,parameters,scenarios)
+
+end = rbind(end,df)}
+
+colnames(end)=c("Data Generation method","Description","Parameters","Scenarios per sample size setting")
+
+
+kable(end,format = "html",table.attr = "style='width:100%;'",caption = "Table 2: Summary of included data generation methods per sample size setting. There are 3 balanced sample size settings included of which the total sample size (n1+n2) is equal to 20,40 and 200. One unbalanced sample size setting was included, n1=10 and n2=100. Specific parameter values for all scenarios are included in the supplementary of the report. ")%>%
+kable_styling(bootstrap_options = "striped")
+```
+
+### 1.3 Session information
+
+```{r,echo=F}
+sessionInfo()
 ```
 
 ## 2. Type I error rate control
 
-Figure 1 shows the emprical type I error rates of all included methods per data generation method. All tests were performed at the 5% level of significance (red dotted line), and the error rates were computed based on 10000 simulation runs. Points above (below) the lower and upper horizontal reference lines (black dotted line) correspond to liberal (conservative) tests. The liberal tests are the test that have a type I error rate (upper confidence interval of the type I error rate) above the the upper reference line. These liberal tests will be filtered out of the results, as comparing these methods to methods that control the type I error would not be fair or sensible.
+[**Summary:**]{.underline}
 
-The percentile modified Wilcoxon-Mann-Whitney test (Gastwirth), has a type I error rate that is too liberal in all scenarios and will be filtered out. The Welch two sample t-test and the Yuen's test do not control the type I error rate control for scenarios of the exponential distribution, and the g-h distribution. These are scenarios with unequal sample sizes. The two sample student-t test is too liberal for scenarios from the Cauchy distribution with unequal sample sizes between the two groups. In contrast, the asymptotic Kolmogorov-Smirnov test and the Mood's median test have a type I error rate control that is very conservative.
+1.  [Aim:]{.underline}
+
+    Screen methods under H~0~ scenarios and explore Type I error rate control at the nominal level of 5%.
+
+2.  [Procedure:]{.underline}
+
+    Methods with a Type I error rate that is above the largest acceptable estimated Type I error rate are filtered out for this specific scenario (i.e. liberal methods). This is based on 10000 simulation runs.
+
+3.  [Results:]{.underline}
+
+    -   **The percentile modified asymptotic Wilcoxon-Mann-Whitney test (Gastwirth)** can be considered as a method that is too liberal for all included scenarios, especially for small sample sizes.
+
+    -   **The Welch test** behaves too liberal for scenarios with unequal sample sizes (n1=10, n2=100) in skewed distributions such as the exponential distribution and the g-and-h distribution.
+
+    -   **The Yuen** test behaves in general too too liberal for scenarios with unequal sample sizes (n1=10, n2=100), except in scenarios of the Cauchy distribution.
+
+    -   **The two sample student t-test** behaves too liberal in scenarios with unequal sample sizes in long-tailed distributions, such as the Cauchy distribution.
+
+    -   **The Brunner-Munzel test** is too liberal in the type I error rate control for scenarios with small and unbalanced sample sizes.
+
+    -   **The asymptotic Kolmogorov-Smirnov test and Mood's median test** have a Type I error rate control that is conservative in most scenarios.
+
+    -   The following methods give the most stable results over all methods: **Anderson-Darling test**, **Van der Waerden normal scores test and the Cramer-Von Mises test**.
+
+Figure 1 shows the empirical Type I error rates of all included methods per data generation method. All tests were performed at the 5% level of significance (red dotted line), and the error rates were computed based on 10000 simulation runs. Points above (below) the upper (lower) horizontal reference line (black dotted line) correspond to liberal (conservative) tests. These liberal tests will be filtered out of for those specific scenarios, as comparing these methods to methods that control the type I error would not be fair or sensible.
+
+The percentile modified asymptotic Wilcoxon-Mann-Whitney test (Gastwirth), has a Type I error rate that is too liberal in all included scenarios, these scenarios will be filtered out in the following sections. This inflation of the Type I error rate, especially in small sample sizes, is caused by using the normal approximation which is not valid for small sample sizes. The choice of the parameters P and R (percentile of the extremes of the rank order used) can also affect the behavior if this is not appropriate. However more scenarios with different values are needed to know what is appropriate.
+
+The Brunner-Munzel test is too liberal in scenarios with small and unbalanced sample sizes, this shows that the small sample approximation with the t-distribution does not behave well in terms of type I error rate control.
+
+For the Welch and Yuen test, you can see a clear inflation of the Type I error rate for the scenarios with unbalanced sample sizes, and with skewed distributions (Exponential, g-and-h distribution). These skewed distributions are violations to the distributional assumption of the Welch test. The Yuen test is an adaptation of the Welch test and uses a trimmed two sample t statistic, which makes the test more robust in case of symmetric heavy-tailed distributions, such as the Cauchy distribution. However, for all other data generation methods, the simulation results show that trimming in the scenarios with unbalanced sample sizes causes an inflation of the Type I error, as trimming strongly unbalanced groups can affect the shape and symmetry of the resulting distributions such that the trimmed mean does not represent the true mean.
+
+The two-sample student's t-test has a conservative Type I error rate control for the balanced scenarios from the Cauchy distribution, and in contrast a too liberal Type I error rate control for the unbalanced scenarios. This contrast can be explained by the impact of the extreme values of the Cauchy distribution in the unbalanced setting being stronger than in the balanced scenarios.
+
+The asymptotic Kolmogorov-Smirnov test and Mood's median test have a Type I error rate control that is conservative in most scenarios, this result reflects that the sample sizes used are too small for the approximations to control the Type I error rate at the nominal significance level.
 
 ```{r,echo=F , warning=FALSE}
-path="C:\\Users\\lucp9827\\Desktop\\Neutralise_end_Dash - report"
+path="C:\\Users\\lucp9827\\Documents\\NeutraliseFiles"
 Boxplot_TypeI(path,panel="distribution")$graph
 ```
 
 ## 3. Power-power curve: Best method
 
-In the figures below (Figure:2-14), the power-power curves are shown between the specified method versus the 'best' performing method in that specific scenario setting (distribution). These plots are given for sample size 20 (left column) and sample size 200 (right column). All 14 methods are included, we excluded Gastwirth as the method had a type I error rate that was far too liberal for most scenarios. In general, the results with sample size 20 are more scattered, while the results of sample size 200 are more centered around the diagonal and more specifically the top right of the diagonal (highest power results), which is expected as the power increases with sample size. The tests that had a very conservative type I error rate control (KS, Mood), also show power-power curves that reflect the lack of power in comparison to the best performing methods. This lack in power is also noticeable for the results for the Cauchy and g-h distributions of the two sample Student-t test and the Welch t-test. Remarkably, for some scenarios of the normal distributions with unequal variances, the Welch t-test has much lower power than the best competitor, the best competitor is the two sample smooth test with fixed order 4 and Legendre polynomials. For the WMW test, the power-power plot shows that the test has at least similar results in comparison to the best method for the logistic distribution with sample size 200 (as expected), but for the small sample sizes slightly better tests exist. The plots of Anderson-Darling(AD) have more of the observations around the diagonal for both sample sizes in comparison to all other methods. Hence, the AD test has often the largest power, and when it does not, its power is not much smaller than the power of the best competitor (i.e. the points are close to the diagonal). The worst performing test is the two sample smooth test with fixed order 6 and Legendre Polynomials. Based on these results we selected AD, KS, the Welsh test, Student-t test, WMW test and two sample smooth test with fixed order 4 and Legendre polynomials. Hence, the plots are better evaluated in some more detail in the next section.
+[**Summary:**]{.underline}
+
+1.  [Aim:]{.underline}
+
+    Selecting a few methods with overall a high power in different scenarios.
+
+2.  [Procedure:]{.underline}
+
+    The methods are compared with the 'best method' in each scenario of sample size 10 and 100 (per group). When points (scenarios) are situated above the diagonal of the plot, the specified method is performing better than the 'best method(s)' of all other included methods. When points (scenarios) are situated below the diagonal of the plot, the 'best method(s)' of all other included methods performs better that the specified method. Scenarios in which the method is too liberal in the Type I error rate control were filtered out (see section 2).
+
+3.  [Results:]{.underline}
+
+    -   **KS and Mood** show plots that reflect a low power in comparison to the best performing methods (results mainly under the diagonal). This is also a reflection of the conservative Type I error rate (section 2).
+
+    -   **The Welch Test and the two-sample student's t-test** noticeably lack power for scenarios from skewed and heavy-tailed distributions.
+
+    -   **The two sample smooth test with fixed order 4 and Legendre polynomials** outperforms the Welch test in scenarios of the normal distribution with unequal variances.
+
+    -   For small sample sizes in the logistic distribution scenarios, slightly better tests exist than the **Asymptotic** **WMW test**.
+
+    -   The **AD test** behaves the most stable across all scenarios for both sample sizes.(points close to the diagonal)
+
+    -   The worst performing test is **the two sample smooth test with fixed order 6 and Legendre Polynomials**.
+
+In the figures below (Figure:2-14), the power-power curves are shown between the specified method versus the 'best' performing method in that specific scenario (distribution). These plots are given for sample size 20 (left column) and sample size 200 (right column). Thirteen methods are included, Gastwirth was exluded as this method had a Type I error rate that was far too liberal for all included scenarios.
+
+In general, the results of the scenarios with a total sample size of 20 are more scattered around the diagonal of the plot, while the results of the scenarios with a total sample size of 200 are more centered around the top right part of the diagonal and/or the vertical line of x=1. This shows that in the scenarios with a total sample size of 200, the best method(s) often has a maximum power of 100% in these scenarios (vertical line of x=1). This reflects that for these scenarios on the line x=1, a better method exists than the specified method. In contrast, for the scenarios with a total sample size of 20, there is more variability in the results of the 'best method' which results in a more scattered pattern around the diagonal. This also in part reflects that when the sample size increases the power increases.
+
+The tests that had a very conservative type I error rate control (KS, Mood), also show power-power curves that reflect the lack of power in comparison to the best performing methods (points mainly below the diagonal). This lack in power is also noticeable for the results for the Cauchy, exponential and g-h distributions of the two-sample Student's t-test and the Welch t-test. Remarkably, for some scenarios of the normal distributions with unequal variances, the Welch t-test has much lower power than the best competitor, the best competitor is the two-sample smooth test with fixed order 4 and Legendre polynomials.
+
+For the WMW test, the power-power plot shows that the test has at least similar results in comparison to the best method for the logistic distribution with sample size 200 (as expected), but for the small sample sizes slightly better tests exist. The plots of Anderson-Darling(AD) have more of the observations around the diagonal for both sample sizes in comparison to all other methods. Hence, the AD test has often the largest power, and when it does not, its power is not much smaller than the power of the best competitor (i.e. the points are close to the diagonal). The worst performing test is the two sample smooth test with fixed order 6 and Legendre Polynomials.
+
+**Based on these results we selected AD, CVM, the Welch test, Student's t-test, WMW test and two-sample smooth test with fixed order 4 and Legendre polynomials**. Hence, the plots are better evaluated in some more detail in the next section.
 
 ```{r,echo=F,warning=F}
-BM1 = Best_method_plot(path,"AD",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 = Best_method_plot(path,"AD",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"AD",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -69,7 +191,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"KS",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"KS",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"KS",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -79,7 +201,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"CVM",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"CVM",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"CVM",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -89,7 +211,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"TTest_VarEqual",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"TTest_VarEqual",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"TTest_VarEqual",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -99,7 +221,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"TTest_VarUnequal",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"TTest_VarUnequal",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"TTest_VarUnequal",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -109,7 +231,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"Yuen",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"Yuen",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"Yuen",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -119,7 +241,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"BM",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"BM",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"BM",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -129,7 +251,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"VW",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"VW",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"VW",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -139,7 +261,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"Mood",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"Mood",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"Mood",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -149,7 +271,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"HFR",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"HFR",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"HFR",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -159,7 +281,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"WMW_Asymp",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"WMW_Asymp",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"WMW_Asymp",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -169,7 +291,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"SmoothFixed_4_asymp",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"SmoothFixed_4_asymp",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"SmoothFixed_4_asymp",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -179,7 +301,7 @@ BM2$graph
 ```
 
 ```{r,echo=F,warning=F}
-BM1 =Best_method_plot(path,"SmoothFixed_6_asymp",n=20,alpha=0.05,name_methods=NULL,N=10000)
+BM1 =Best_method_plot(path,"SmoothFixed_6_asymp",n=20,alpha=0.05,name_methods=NULL,N=10000,include_legend=FALSE)
 BM2 = Best_method_plot(path,"SmoothFixed_6_asymp",n=200,alpha=0.05,name_methods=NULL,N=10000)
 ```
 
@@ -190,10 +312,60 @@ BM2$graph
 
 ## 4. Power-Power curve
 
-The power-power plots are based on 10000 simulation runs and 5% significance level. The scenarios where the type I error was too liberal are filtered out. The first comparison (Figure 15, top left), the Anderson-Darling test (AD) versus the Kolmogrov Smirnov test (KS), shows that AD has a higher power in most scenarios. For some scenario's in the Cauchy distribution and Normal distribution with unequal variances, KS has a higher power. These scenarios are characterized with unequal sample sizes. Moreover, the asymmetry of the plot suggests that when the AD outperforms the KS test, it is by a larger margin than it is the other way around. The power-power plot of the two sample student t-test and the Welch test (Figure 15, top right), show the results of most scenarios are close to the diagonal which means that they have similar results in those scenarios. However for the scenarios from the Normal distribution with unequal variances and unequal sample sizes, the Welch test outperforms the two sample student-t test. The third comparison (Figure 15, down left), compares the Welch t-test to the Wilcoxon-Mann-Whitney test (WMW). In this comparison it's clear that WMW outperforms the Welch t-test for scenarios from the Cauchy and Exponential distribution. The plot also shows that many points are close to the diagonal (particularly for the symmetric distributions), indicating that for these distributions the powers of the two tests are close to one another. However, there are still many other points far off the diagonal, towards both sides. This shows that for some scenarios (skew and/or heavy tailed distributions) the powers of the WMW test and the Welch t-test may be very different. Sometimes the WMW wins, other times the Welch t-test wins. The last plot (Figure 15, down right) compares WMW with Two sample smooth test with fixed order 4 and Legendre polynomials. WMW outperforms the smooth test in the logistic distribution, and has a higher power in the scenarios that come from the more symmetric distributions. In contrast, the smooth test has a higher power in the more skewed and/or heavy tailed distributions, which is what we would expect from the smooth test.
+[**Summary:**]{.underline}
+
+1.  [Aim:]{.underline}
+
+    Comparing the selected methods in section 3, and use the empirically computed moments of the scenarios to understand the differences.
+
+2.  [Procedure:]{.underline}
+
+    The methods are compared with each other in all scenarios where they both control the Type I error rate. When points (scenarios) are situated close to the diagonal, the methods behave similar in power. When the points are further away from the diagonal, one methods outperforms the other method. The Shiny app of Neutralise is used to get more information about the empirically computed moments.
+
+3.  [Results:]{.underline}
+
+    -   **AD vs CVM:**
+
+        -   AD outperforms CVM in most scenarios
+
+        -   CVM behaves better in some scenarios of the Cauchy distribution and Normal distribution with unequal variances.
+
+            -   Cauchy distribution: in scenarios with larger sample sizes CVM performs better
+
+            -   Normal distribution with unequal variances: CVM performs better in scenarios where the moments of the Normal distribution of each group reflect large differences of variances and there is an unbalanced setting (n=110).
+
+    -   **Two Sample Student-t-test vs Welch test:**
+
+        -   The results of both tests are similar in most scenarios.
+
+        -   The Welch test outperforms the two sample student's t-test in scenarios of the normal distribution with unequal variances and sample sizes. This is also reflected in the estimated moments of those scenarios.
+
+    -   **Welch test vs asymptotic WMW test:**
+
+        -   WMW outperforms the Welch test for scenarios from the Cauchy and Exponential distribution (long tailed and asymmetric distributions).
+
+        -   For the more symmetric distributions the methods have similar power (close to the diagonal)
+
+        -   The Welch performs better when the estimated skeweness of both groups is of opposite sign for scenarios of the g-and-h distribution.
+
+    -   **Asymptotic WMW test vs Two sample smooth test with fixed order 4 and Legendre polynomials:**
+
+        -   WMW outperforms the smooth test in the logistic and other symmetric distributions.
+
+        -   Smooth test outperforms the more skewed and heavy tailed distributions.
+
+The power-power plots are based on 10000 simulation runs and 5% significance level. The scenarios where the type I error was too liberal are filtered out.
+
+The first comparison (Figure 15, top left), the Anderson-Darling test (AD) versus the Cramer-Von Mises test (CVM), shows that AD has a higher power in most scenarios. For some scenario's in the Cauchy distribution and Normal distribution with unequal variances, CVM has a higher power. More specific, in Cauchy scenarios with a high sample size and in Normal scenarios with unequal variances with unequal sample sizes.
+
+The power-power plot of the two sample student t-test and the Welch test (Figure 15, top right), show the results of most scenarios are close to the diagonal which means that they have similar results in those scenarios. However for the scenarios from the Normal distribution with unequal variances and unequal sample sizes, the Welch test outperforms the two sample student-t test.
+
+The third comparison (Figure 15, down left), compares the Welch t-test to the Wilcoxon-Mann-Whitney test (WMW). In this comparison it's clear that WMW outperforms the Welch t-test for scenarios from the Cauchy and Exponential distribution. The plot also shows that many points are close to the diagonal (particularly for the symmetric distributions), indicating that for these distributions the powers of the two tests are close to one another. However, there are still many other points far off the diagonal, towards both sides. This shows that for some scenarios (skew and/or heavy tailed distributions) the powers of the WMW test and the Welch t-test may be very different. Sometimes the WMW wins, other times the Welch t-test wins.
+
+The last plot (Figure 15, down right) compares WMW with Two sample smooth test with fixed order 4 and Legendre polynomials. WMW outperforms the smooth test in the logistic distribution, and has a higher power in the scenarios that come from the more symmetric distributions. In contrast, the smooth test has a higher power in the more skewed and/or heavy tailed distributions, which is what we would expect from the smooth test.
 
 ```{r,echo=F,warning=F, figures-side, fig.show="hold",out.width="50%",fig.cap="Figure 15. Power-Power plots for comparing two methods. Top left: Anderson-Darling versus Kolmogrov Smirnov test. Top right: Welch versus the two sample student-t test. Down left: Welch two sample test versus the Wilcoxon-Mann-Whitney test. Down Right: Two sample smooth test with fixed order 4 and Legendre polynomials versus the Wilcoxon-Mann-Whitney test."}
-pp1 = Power_QQ(path,"AD","KS",alpha=0.05,group=TRUE,N=10000)
+pp1 = Power_QQ(path,"AD","CVM",alpha=0.05,group=TRUE,N=10000)
 pp1$graph
 pp2 = Power_QQ(path,"TTest_VarEqual","TTest_VarUnequal",alpha=0.05,group=TRUE,N=10000)
 pp2$graph
@@ -205,5 +377,8 @@ pp4$graph
 
 ## 5. Conclusion
 
-In terms of Type I error rate control the results has shown that the Welch test and Yuen test, which is a derivative of the Welch test but with trimmed means, do not perform well for skewed and heavy tailed distributions in combination with unequal sample sizes. Moods test and KS, have a conservative type I error rate control, especially for small sample sizes. The methods that have a conservative type I error rate have shown that they are also lacking in terms of power. AD has performed well in most scenarios. The WMW test performed well in scenarios with symmetrical distributions (with equal sample sizes), but less in scenarios with opposite skewed distributions and heavy tailed distributions.\
-In general, the methods perform well for the distributions and scenarios they are developed for. The methods distinguish from each other in scenarios that have small sample size and/or unequal balanced design, in combination with skewed and heavy tailed distributions. Here, the more robust methods such as AD, CVM perform better.
+In terms of Type I error rate control the results has shown that in scenarios with small and unbalanced sample sizes the asymptotic approximations of the percentile modified asymptotic Wilcoxon-Mann-Whitney test, The Brunner-Munzel test, Asymptotic Baumgartner-Weiss-Schindler test testhave difficulties in controling the Type I error rate at the nominal level (too liberal). The Welch test and Yuen test, which is a derivative of the Welch test but with trimmed means, do not perform well for skewed distributions with unequal sample sizes. Moods median test and KS, have a conservative Type I error rate control, especially for small sample sizes. These results have shown that a conservative Type I error rate reflects a decreased power in comparison with the best methods.
+
+In terms of power, AD has performed well in most scenarios. The WMW test performed well in scenarios with symmetrical distributions (with equal sample sizes), but less in scenarios with opposite skewed distributions and heavy tailed distributions.
+
+In general, the methods perform well for the distributions and scenarios they are developed for. The methods distinguish from each other in scenarios that have small sample size and/or unequal balanced design, with skewed and heavy tailed distributions. Here, the more robust methods such as AD and CVM perform best.
