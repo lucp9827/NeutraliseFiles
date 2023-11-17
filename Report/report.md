@@ -224,16 +224,16 @@ All the results shown in this report can be reproduced using the data in Neutral
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] kableExtra_1.3.4 dplyr_1.1.3      knitr_1.45       ggplot2_3.4.4   
-## [5] Neutralise_0.1.0
+## [1] kableExtra_1.3.4 knitr_1.45       Neutralise_0.1.0 ggplot2_3.4.4   
+## [5] dplyr_1.1.3     
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] gtable_0.3.4      jsonlite_1.8.7    highr_0.10        compiler_4.3.1   
-##  [5] webshot_0.5.5     tidyselect_1.2.0  xml2_1.3.5        stringr_1.5.0    
+##  [5] webshot_0.5.5     tidyselect_1.2.0  stringr_1.5.0     xml2_1.3.5       
 ##  [9] jquerylib_0.1.4   systemfonts_1.0.5 scales_1.2.1      yaml_2.3.7       
 ## [13] fastmap_1.1.1     R6_2.5.1          generics_0.1.3    tibble_3.2.1     
 ## [17] munsell_0.5.0     svglite_2.1.2     bslib_0.5.1       pillar_1.9.0     
-## [21] rlang_1.1.1       utf8_1.2.3        cachem_1.0.8      stringi_1.7.12   
+## [21] rlang_1.1.1       utf8_1.2.3        stringi_1.7.12    cachem_1.0.8     
 ## [25] xfun_0.41         sass_0.4.7        viridisLite_0.4.2 cli_3.6.1        
 ## [29] withr_2.5.2       magrittr_2.0.3    digest_0.6.33     rvest_1.0.3      
 ## [33] grid_4.3.1        rstudioapi_0.15.0 lifecycle_1.0.4   vctrs_0.6.3      
@@ -272,15 +272,15 @@ All the results shown in this report can be reproduced using the data in Neutral
 
 Figure 1 shows the empirical Type I error rates of all included methods per data generation method. All tests were performed at the 5% level of significance (red dotted line), and the error rates were computed based on 10000 simulation runs. Points above (below) the upper (lower) horizontal reference line (black dotted line) correspond to liberal (conservative) tests. These liberal tests will be filtered out of for those specific scenarios, as comparing these methods to methods that control the type I error would not be fair or sensible.
 
-The percentile modified asymptotic Wilcoxon-Mann-Whitney test (Gastwirth), has a Type I error rate that is too liberal in all included scenarios, these scenarios will be filtered out in the following sections. This inflation of the Type I error rate, especially in small sample sizes, is caused by using the normal approximation which is not valid for small sample sizes. The choice of the parameters P and R (percentile of the extremes of the rank order used) can also affect the behavior if this is not appropriate. However more scenarios with different values are needed to know what is appropriate.
+The percentile modified asymptotic Wilcoxon-Mann-Whitney test (Gastwirth) has a Type I error rate that is too liberal in all included scenarios (these scenarios will be filtered out in the following sections). This inflation of the Type I error rate, especially with small sample sizes, is caused by using the normal approximation for p-value calculation. The choice of the parameters P and R (percentile of the extremes of the rank order used) can also affect the behavior if this is not appropriate for the specific distribution. However, more scenarios with different values of these parameters are needed to provide better guidelines.
 
-The Brunner-Munzel test is too liberal in scenarios with small and unbalanced sample sizes, this shows that the small sample approximation with the t-distribution does not behave well in terms of type I error rate control.
+The Brunner-Munzel test is too liberal in scenarios with small and unbalanced sample sizes, indicating that the small sample approximation with the t-distribution does not work well in terms of type I error rate control.
 
 For the Welch and Yuen test, you can see a clear inflation of the Type I error rate for the scenarios with unbalanced sample sizes, and with skewed distributions (Exponential, g-and-h distribution). These skewed distributions are violations to the distributional assumption of the Welch test. The Yuen test is an adaptation of the Welch test and uses a trimmed two sample t statistic, which makes the test more robust in case of symmetric heavy-tailed distributions, such as the Cauchy distribution. However, for all other data generation methods, the simulation results show that trimming in the scenarios with unbalanced sample sizes causes an inflation of the Type I error, as trimming strongly unbalanced groups can affect the shape and symmetry of the resulting distributions such that the trimmed mean does not represent the true mean.
 
 The two-sample student's t-test has a conservative Type I error rate control for the balanced scenarios from the Cauchy distribution, and in contrast a too liberal Type I error rate control for the unbalanced scenarios. This contrast can be explained by the impact of the extreme values of the Cauchy distribution in the unbalanced setting being stronger than in the balanced scenarios.
 
-The asymptotic Kolmogorov-Smirnov test and Mood's median test have a Type I error rate control that is conservative in most scenarios, this result reflects that the sample sizes used are too small for the approximations to control the Type I error rate at the nominal significance level.
+The asymptotic Kolmogorov-Smirnov test and Mood's median test have a Type I error rate control that is conservative in most scenarios. The results indicate that the sample sizes included are too small for the approximation to control the Type I error rate at the nominal significance level.
 
 ![](report_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
