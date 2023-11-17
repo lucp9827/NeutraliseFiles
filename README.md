@@ -39,10 +39,10 @@ tryCatch(
     expr = {
      install.packages(i, dependencies=TRUE)
      library(i, quietly=TRUE, verbose=FALSE, warn.conflicts=FALSE, character.only=TRUE)
-      cat("Successfully installed", package, "\n")
+      cat("Successfully installed", *i, "\n")
     },
     error = function(e) {
-      cat("Error installing", package, ":", conditionMessage(e), "\n")
+      cat("Error installing", i, ":", conditionMessage(e), "\n")
     }
   )
 }
