@@ -26,15 +26,20 @@ folder.
 
 5. Install and load the following packages in your R-session: remotes, kSamples, lawstat, BWStest, twosamples, RVAideMemoire, WRS2, gk, gld and DescTools.                                                                                                              
 
-      R-code:                                                                                                                                                                                                                                                                 
-      
-      reqpkg = c("remotes","kSamples","lawstat","BWStest",
-      "RVAideMemoire","WRS2","gk","gld","twosamples","DescTools")
-      
-      for(i in reqpkg)
-      {print(i)
-      install.packages(i)
-      library(i, quietly=TRUE, verbose=FALSE, warn.conflicts=FALSE, character.only=TRUE)}
+   ``` r
+knitr::opts_chunk$set(echo = TRUE)
+
+# Install and load required packages
+reqpkg = c("kSamples", "lawstat", "BWStest", "RVAideMemoire", "DescTools", "WRS2", "gld", "gk", "twosamples")
+# Install and Load all required packages and show version
+for(i in reqpkg)
+{
+  print(i)
+  install.packages(i)
+  library(i, quietly=TRUE, verbose=FALSE, warn.conflicts=FALSE, character.only=TRUE)
+}
+```
+
    
 6. Install Neutralise. You can use the following R-code: remotes::install_github(’lucp9827/Neutralise’)
 
@@ -46,8 +51,8 @@ folder.
 possibilities)
 
 
-### B. Step-by-Step instructions for Neutralise - Starting from the Github repository NeutraliseFiles
-This concise checklist is intended for users to analyze the results from the Github repository NeutraliseFiles. For more details and examples, we refer to the README file of Neutralise (https://github.com/lucp9827/Neutralise).
+### B. Step-by-Step instructions for Neutralise - Starting from the GitHub repository NeutraliseFiles
+This concise checklist is intended for users to analyze the results from the GitHub repository NeutraliseFiles. For more details and examples, we refer to the README file of Neutralise (https://github.com/lucp9827/Neutralise).
 We recommend following this tutorial to understand how the Neutralise function works and what the possibilities are within this initiative.
 1. Download NeutraliseFiles_full.zip from https://github.com/lucp9827/NeutraliseFiles and unzip this
 folder.
