@@ -25,9 +25,12 @@ folder.
 4. Save this working directory also to the object path. (R-code: path=getwd())
 
 5. Install and load the following packages in your R-session: remotes, kSamples, lawstat, BWStest, twosamples, RVAideMemoire, WRS2, gk, gld and DescTools.                                                                                                              
+
 R-code:                                                                                                                                                                                                                                                                 
+
 reqpkg = c("remotes","kSamples","lawstat","BWStest",
 "RVAideMemoire","WRS2","gk","gld","twosamples","DescTools")
+
 for(i in reqpkg)
 {print(i)
   install.packages(i)
