@@ -56,6 +56,7 @@ This concise checklist is intended for users to analyze the results from the Git
 We recommend following this tutorial to understand how the Neutralise function works and what the possibilities are within this initiative.
 1. Follow steps 1 to 7 of the Step-by-Step Instructions A (above), but in step 1 download the NeutraliseFiles_full.zip (instead of empty), and in step 3 set the working directory to the NeutraliseFiles folder in the unzipped NeutraliseFiles_full file (instead of empty).
 2. You are ready to start analysing the data, we propose two options below. However, if you want to start from the original result files, check the Demonstration file to understand how the results are organized in the NeutraliseFiles.
+
 Option 1: You can start analysing the data with the provided visualization functions (power-power plot, type
 I error rate boxplots, power curves), check the demonstration file in the Neutralise package for
 more details.
