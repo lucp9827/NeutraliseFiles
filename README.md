@@ -26,9 +26,9 @@ folder.
 
 5. Install and load the following packages in your R-session: remotes, kSamples, lawstat, BWStest, twosamples, RVAideMemoire, WRS2, gk, gld and DescTools.                                                                                                              
 
-   ``` r
+``` r
 knitr::opts_chunk$set(echo = TRUE)
-
+# R-code
 # Install and load required packages
 reqpkg = c("kSamples", "lawstat", "BWStest", "RVAideMemoire", "DescTools", "WRS2", "gld", "gk", "twosamples")
 # Install and Load all required packages and show version
