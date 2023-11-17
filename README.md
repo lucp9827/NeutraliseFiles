@@ -23,14 +23,23 @@ folder.
 3. Set the working directory of your R-session to the folder NeutraliseFiles in the unzipped NeutraliseFiles_empty folder.
 
 4. Save this working directory also to the object path. (R-code: path=getwd())
+
+5. Install and load the following packages in your R-session: remotes, kSamples, lawstat, BWStest, twosamples, RVAideMemoire, WRS2, gk, gld and DescTools.                                                                                                              
+R-code:                                                                                                                                                                                                                                                                 
+reqpkg = c("remotes","kSamples","lawstat","BWStest",
+"RVAideMemoire","WRS2","gk","gld","twosamples","DescTools")
+for(i in reqpkg)
+{print(i)
+  install.packages(i)
+  library(i, quietly=TRUE, verbose=FALSE, warn.conflicts=FALSE, character.only=TRUE)}
    
-5. Install Neutralise. You can use the following R-code: remotes::install_github(’lucp9827/Neutralise’)
+6. Install Neutralise. You can use the following R-code: remotes::install_github(’lucp9827/Neutralise’)
 
-6. Load Neutralise in your R-session. (R-code: library(Neutralise))
+7. Load Neutralise in your R-session. (R-code: library(Neutralise))
 
-7. Run the function Initialise_Neutralise(path)
+8. Run the function Initialise_Neutralise(path)
 
-8. You can start using the Neutralise function. (check the README file of Neutralise for details on the function
+9. You can start using the Neutralise function. (check the README file of Neutralise for details on the function
 possibilities)
 
 
