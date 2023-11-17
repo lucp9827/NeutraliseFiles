@@ -26,15 +26,15 @@ folder.
 
 5. Install and load the following packages in your R-session: remotes, kSamples, lawstat, BWStest, twosamples, RVAideMemoire, WRS2, gk, gld and DescTools.                                                                                                              
 
-R-code:                                                                                                                                                                                                                                                                 
-
-reqpkg = c("remotes","kSamples","lawstat","BWStest",
-"RVAideMemoire","WRS2","gk","gld","twosamples","DescTools")
-
-for(i in reqpkg)
-{print(i)
-  install.packages(i)
-  library(i, quietly=TRUE, verbose=FALSE, warn.conflicts=FALSE, character.only=TRUE)}
+      R-code:                                                                                                                                                                                                                                                                 
+      
+      reqpkg = c("remotes","kSamples","lawstat","BWStest",
+      "RVAideMemoire","WRS2","gk","gld","twosamples","DescTools")
+      
+      for(i in reqpkg)
+      {print(i)
+      install.packages(i)
+      library(i, quietly=TRUE, verbose=FALSE, warn.conflicts=FALSE, character.only=TRUE)}
    
 6. Install Neutralise. You can use the following R-code: remotes::install_github(’lucp9827/Neutralise’)
 
